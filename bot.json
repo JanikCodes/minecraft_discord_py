@@ -1,0 +1,8 @@
+{
+  "token": "MTA5ODU4MTUyNzQ0NjcwMDA4Mw.GeYxBh.lBwv7vxO_pes0V_BRATQz0XzS_THB-Suk0eBAY",
+  "host": "localhost",
+  "user": "root",
+  "password": "1111",
+  "port": 3306,
+  "database": "minimc"
+}
