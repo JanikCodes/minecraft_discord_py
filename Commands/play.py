@@ -25,7 +25,10 @@ class WorldSelect(discord.ui.Select):
 
         message = interaction.message
         edited_embed = message.embeds[0]
-        edited_embed.title = "Playing.."
+        edited_embed.title = ""
+        edited_embed.description = "🟩🟩🟩🟩🟩🟩\n" \
+                                   "🟫🟫🟫🟫🟫🟫"
+        edited_embed.set_footer(text="")
         edited_embed.colour = discord.Color.light_embed()
 
         await interaction.message.edit(embed=edited_embed, view=None)
