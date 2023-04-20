@@ -1,6 +1,8 @@
 import mysql.connector
 
 import config
+from Classes.block import Block
+from Classes.user import User
 from Classes.world import World
 from Classes.world_size import WorldSize
 
@@ -39,6 +41,7 @@ def add_world(idUser, world_name, world_size):
     mydb.commit()
 
     print("Added new world")
+    return idWorld
 
 def get_world_size(idSize):
     sql = f"SELECT idSize, name, x, y FROM world_sizes where idSize = {idSize};"
@@ -73,3 +76,37 @@ def get_all_worlds_from_user(idUser):
             worlds.append(World(row[0]))
 
     return worlds
+
+def get_block(idBlock):
+    sql = f"SELECT idBlock, name, idType, solid, emoji FROM blocks WHERE idBlock = {idBlock};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return res
+    else:
+        return None
+
+
+def get_world_blocks(idWorld):
+    blocks = []
+    sql = f"SELECT idBlock, x, y FROM worlds_has_blocks WHERE idWorld = {idWorld};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            block = Block(row[0])
+            block.set_x_pos(row[1])
+            block.set_y_pos(row[2])
+            blocks.append(block)
+
+    return blocks
+
+
+def get_user_in_world(idUser, idWorld):
+    sql = f"SELECT idUser, x, y FROM worlds_has_users WHERE idWorld = {idWorld} AND idUser = {idUser};"
+    cursor.execute(sql)
+    res = cursor.fetchone()
+    if res:
+        return User(res[0], res[1], res[2])
+
+    return None

@@ -1,0 +1,13 @@
+
+
+
+insert into world_sizes value(NULL, "small", 25, 25);
+insert into world_sizes value(NULL, "medium", 50, 50);
+insert into world_sizes value(NULL, "big", 100, 100);
+
+INSERT INTO block_types VALUE(1, "normal");
+
+INSERT INTO blocks VALUE(NULL, "air", 1, 0, "air");
+INSERT INTO blocks VALUE(NULL, "grass", 1, 1, "dgrass");
+INSERT INTO blocks VALUE(NULL, "dirt", 1, 1, "dirt");
+INSERT INTO blocks VALUE(NULL, "cleanstone", 1, 1, "cleanstone");

@@ -8,8 +8,7 @@ class World:
         self.owner = res[1]
         self.name = res[2]
         self.world_size = WorldSize(res[3])
-        # TODO:
-        self.blocks = None
+        self.blocks = db.get_world_blocks(idWorld=res[0])
 
     def get_name(self):
         return self.name
@@ -22,3 +21,11 @@ class World:
 
     def get_id(self):
         return self.id
+    def get_blocks(self):
+        return self.blocks
+
+    def get_block(self, x, y):
+        for block in self.blocks:
+            if block.get_x_pos() == x and block.get_y_pos() == y:
+                return block
+        return None
