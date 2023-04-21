@@ -1,3 +1,4 @@
+from Classes.block import Block
 from Classes.world_size import WorldSize
 import db
 
@@ -28,4 +29,10 @@ class World:
         for block in self.blocks:
             if block.get_x_pos() == x and block.get_y_pos() == y:
                 return block
-        return None
+
+        # no block was found, so it needs to be air
+        print("Return air block")
+        air_block = Block(id=1)
+        air_block.set_x_pos(x)
+        air_block.set_y_pos(y)
+        return air_block

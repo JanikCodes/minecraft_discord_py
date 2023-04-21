@@ -16,7 +16,7 @@ class InviteView(discord.ui.View):
         super().__init__()
         self.add_item(LinkButton())
 
-class Invite(commands.Cog):
+class InviteCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
@@ -32,4 +32,4 @@ class Invite(commands.Cog):
             await self.client.send_error_message(e)
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(Invite(client))
+    await client.add_cog(InviteCommand(client))

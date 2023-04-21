@@ -5,8 +5,68 @@ import db
 
 from Classes.world import World
 
-def render_world():
-    pass
+class MoveButton(discord.ui.Button):
+    def __init__(self, label, user, dir_x, dir_y, world):
+        super().__init__(label=label, style=discord.ButtonStyle.success)
+        self.user = user
+        self.dir_x = dir_x
+        self.dir_y = dir_y
+        self.world = world
+    async def callback(self, interaction: discord.Interaction):
+
+        if interaction.user.id != self.user.get_id():
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        await interaction.response.defer()
+
+        db.update_user_position(idUser=self.user.get_id(), idWorld=self.world.get_id(), new_x=self.dir_x, new_y=self.dir_y)
+        await render_world(user=self.user, world=self.world, interaction=interaction)
+
+class WorldGameView(discord.ui.View):
+    def __init__(self, user, world):
+        super().__init__()
+        self.add_item(MoveButton(label="Right", user=user, dir_x=1, dir_y=0, world=world))
+        self.add_item(MoveButton(label="Left", user=user, dir_x=-1, dir_y=0, world=world))
+        self.add_item(MoveButton(label="Up", user=user, dir_x=0, dir_y=-1, world=world))
+        self.add_item(MoveButton(label="Down", user=user, dir_x=0, dir_y=1, world=world))
+
+async def render_world(user, world, interaction):
+    user.update_user(world=world)
+    # define the view range
+    view_range_width = 12
+    view_range_height = 8
+
+    # calculate the starting and ending coordinates of the view range
+    start_x = max(0, user.get_x_pos() - view_range_width // 2)
+    end_x = min(world.get_world_size().get_x() - 1, user.get_x_pos() + view_range_width // 2)
+    start_y = max(0, user.get_y_pos() - view_range_height // 2)
+    end_y = min(world.get_world_size().get_y() - 1, user.get_y_pos() + view_range_height // 2)
+
+    # generate the string representation of the blocks
+    blocks_str = ""
+    for y in range(start_y, end_y + 1):
+        row = ""
+        for x in range(start_x, end_x + 1):
+            block = world.get_block(x, y)
+            block_emoji = discord.utils.get(interaction.client.get_guild(570999180021989377).emojis,
+                                            name=block.get_emoji())
+
+            row += f"{block_emoji}"
+
+        blocks_str += row + "\n"
+
+    message = interaction.message
+    edited_embed = message.embeds[0]
+    edited_embed.title = ""
+    edited_embed.description = blocks_str
+
+    edited_embed.set_footer(text="")
+    edited_embed.colour = discord.Color.light_embed()
+
+    return await interaction.message.edit(embed=edited_embed, view=WorldGameView(user=user, world=world))
 
 class WorldSelect(discord.ui.Select):
     def __init__(self, idUser):
@@ -32,38 +92,8 @@ class WorldSelect(discord.ui.Select):
         # get player's current position
         user = db.get_user_in_world(idUser=interaction.user.id, idWorld=selected_idWorld)
 
-        # define the view range
-        view_range_width = 15
-        view_range_height = 15
+        await render_world(user=user, world=world, interaction=interaction)
 
-        # calculate the starting and ending coordinates of the view range
-        start_x = max(0, user.get_x_pos() - view_range_width // 2)
-        end_x = min(world.get_world_size().get_x() - 1, user.get_x_pos() + view_range_width // 2)
-        start_y = max(0, user.get_y_pos() - view_range_height // 2)
-        end_y = min(world.get_world_size().get_y() - 1, user.get_y_pos() + view_range_height // 2)
-
-        # generate the string representation of the blocks
-        blocks_str = ""
-        for y in range(start_y, end_y + 1):
-            row = ""
-            for x in range(start_x, end_x + 1):
-                block = world.get_block(x, y)
-                block_emoji = discord.utils.get(interaction.client.get_guild(570999180021989377).emojis,
-                                                   name=block.get_emoji())
-
-                row += f"{block_emoji}"
-
-            blocks_str += row + "\n"
-
-        message = interaction.message
-        edited_embed = message.embeds[0]
-        edited_embed.title = ""
-        edited_embed.description = blocks_str
-
-        edited_embed.set_footer(text="")
-        edited_embed.colour = discord.Color.light_embed()
-
-        await interaction.message.edit(embed=edited_embed, view=None)
 
 class WorldSelectionView(discord.ui.View):
     def __init__(self, idUser):
@@ -71,7 +101,7 @@ class WorldSelectionView(discord.ui.View):
 
         self.add_item(WorldSelect(idUser=idUser))
 
-class Play(commands.Cog):
+class PlayCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
 
@@ -83,4 +113,4 @@ class Play(commands.Cog):
         await interaction.response.send_message(embed=embed, view=WorldSelectionView(idUser=interaction.user.id))
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(Play(client))
+    await client.add_cog(PlayCommand(client))

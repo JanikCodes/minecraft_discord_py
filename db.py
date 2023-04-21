@@ -36,7 +36,7 @@ def add_world(idUser, world_name, world_size):
     cursor.execute(sql)
     idWorld = str(cursor.fetchone()).strip("(,)")
 
-    sql = f"INSERT INTO worlds_has_users VALUE(NULL, {idWorld}, {idUser}, 0, 0);"
+    sql = f"INSERT INTO worlds_has_users VALUE(NULL, {idWorld}, {idUser}, {world_size.get_x() / 2}, {world_size.get_y() / 2});"
     cursor.execute(sql)
     mydb.commit()
 
@@ -110,3 +110,16 @@ def get_user_in_world(idUser, idWorld):
         return User(res[0], res[1], res[2])
 
     return None
+
+
+def update_user_position(idUser, idWorld, new_x, new_y):
+    if new_x != 0:
+        # Move along X axis
+        sql = f"UPDATE worlds_has_users SET x = x + {new_x} WHERE idUser = {idUser} AND idWorld = {idWorld};"
+        cursor.execute(sql)
+        mydb.commit()
+    else:
+        # Move along Y axis
+        sql = f"UPDATE worlds_has_users SET y = y + {new_y} WHERE idUser = {idUser} AND idWorld = {idWorld};"
+        cursor.execute(sql)
+        mydb.commit()

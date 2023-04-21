@@ -1,14 +1,16 @@
 import random
 
 import discord
+import noise as noise
 from discord import app_commands
-from discord.ext import commands
 from Classes.world_size import WorldSize
+from Classes.world import World
+from discord.ext import commands
 import db
 from Utils import utils
+import noise
 
-
-class World(commands.Cog):
+class WorldCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.scale = 50  # adjust this to control the roughness of the terrain
@@ -26,16 +28,23 @@ class World(commands.Cog):
         selected_world_name = world_name
 
         idWorld = db.add_world(idUser=interaction.user.id, world_name=selected_world_name, world_size=selected_world_size)
+        world = World(id=idWorld)
 
-        # generate blocks in the worldsize dimensions ( width = x, height = y )
-        noise_values = utils.generate_perlin_noise(selected_world_size.get_x(), selected_world_size.get_y(),
-                                             self.scale, octaves=6, persistence=0.5, lacunarity=2.0, seed=self.seed)
-        for x in range(selected_world_size.get_x()):
-            for y in range(selected_world_size.get_y()):
-                idBlock = random.choice([1, 4])
-
-                # add the block to the database
-                db.add_block_to_world(idWorld, idBlock, x, y)
+        freq = 16.0 / world.get_world_size().get_x()
+        for x in range(world.get_world_size().get_x()):
+            for y in range(world.get_world_size().get_y()):
+                if y < 5:
+                    db.add_block_to_world(idWorld=idWorld, idBlock=1, x=x, y=y)
+                elif y < 8:
+                    db.add_block_to_world(idWorld=idWorld, idBlock=2, x=x, y=y)
+                else:
+                    n = noise.pnoise2(x * freq, y * freq, octaves=4)
+                    if n > 0.2:
+                        db.add_block_to_world(idWorld=idWorld, idBlock=2, x=x, y=y)
+                    elif n > -0.2:
+                        db.add_block_to_world(idWorld=idWorld, idBlock=3, x=x, y=y)
+                    else:
+                        db.add_block_to_world(idWorld=idWorld, idBlock=4, x=x, y=y)
 
         embed = discord.Embed(title=f"World Generation",
                               description=f"Successfully generated a **{selected_world_size.get_name()}** world named `{selected_world_name}`!\n"
@@ -44,4 +53,4 @@ class World(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(World(client))
+    await client.add_cog(WorldCommand(client))
