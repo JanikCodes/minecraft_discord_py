@@ -13,6 +13,7 @@ SURFACE_HEIGHT_MAX = 3
 TREE_HEIGHT = 3
 TREE_CHANCE = 0.10
 GRASS_CHANCE = 0.50
+CAVE_THRESHOLD = 0.5
 
 class WorldCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -106,7 +107,6 @@ class WorldCommand(commands.Cog):
                 if random.uniform(0, 1) < TREE_CHANCE:
                     # spawn a tree
                     generate_tree(world=world, block=block, height=TREE_HEIGHT)
-
         print(f"Done!")
 
 def generate_tree(world, block, height):
