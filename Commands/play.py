@@ -1,13 +1,19 @@
 import discord
-from discord import app_commands
+from discord import app_commands, ActionRow
 from discord.ext import commands
 import db
 
 from Classes.world import World
 
+class BlankButton(discord.ui.Button):
+    def __init__(self, row):
+        super().__init__(label=".", style=discord.ButtonStyle.grey, row=row, disabled=True)
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
 class MoveButton(discord.ui.Button):
-    def __init__(self, label, user, dir_x, dir_y, world):
-        super().__init__(label=label, style=discord.ButtonStyle.success)
+    def __init__(self, label, user, dir_x, dir_y, world, row):
+        super().__init__(label=label, style=discord.ButtonStyle.success, row=row)
         self.user = user
         self.dir_x = dir_x
         self.dir_y = dir_y
@@ -28,10 +34,15 @@ class MoveButton(discord.ui.Button):
 class WorldGameView(discord.ui.View):
     def __init__(self, user, world):
         super().__init__()
-        self.add_item(MoveButton(label="Right", user=user, dir_x=1, dir_y=0, world=world))
-        self.add_item(MoveButton(label="Left", user=user, dir_x=-1, dir_y=0, world=world))
-        self.add_item(MoveButton(label="Up", user=user, dir_x=0, dir_y=-1, world=world))
-        self.add_item(MoveButton(label="Down", user=user, dir_x=0, dir_y=1, world=world))
+        self.add_item(BlankButton(row=1))
+        self.add_item(MoveButton(label="Up", user=user, dir_x=0, dir_y=-1, world=world, row=1))
+        self.add_item(BlankButton(row=1))
+        self.add_item(MoveButton(label="Left", user=user, dir_x=-1, dir_y=0, world=world, row=2))
+        self.add_item(BlankButton(row=2))
+        self.add_item(MoveButton(label="Right", user=user, dir_x=1, dir_y=0, world=world, row=2))
+        self.add_item(BlankButton(row=3))
+        self.add_item(MoveButton(label="Down", user=user, dir_x=0, dir_y=1, world=world, row=3))
+        self.add_item(BlankButton(row=3))
 
 async def render_world(user, world, interaction):
     user.update_user(world=world)
