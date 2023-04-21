@@ -52,7 +52,7 @@ class WorldCommand(commands.Cog):
             for y in range(world.get_world_size().get_y()):
                 surface_level = world.get_world_size().get_y() // 2  # surface at the middle of the map
                 noise_value = noise_world[x][y]
-                surface_level += int((noise_value - 0.5) * SURFACE_HEIGHT_MAX)  # adjust surface level based on noise value
+                surface_level += int((noise_value - 0.80) * SURFACE_HEIGHT_MAX)  # adjust surface level based on noise value
 
                 if y <= surface_level:  # air
                     db.add_block_to_world(idWorld=idWorld, idBlock=1, x=x, y=y)
@@ -60,12 +60,12 @@ class WorldCommand(commands.Cog):
                 elif y == surface_level + 1:  # grass
                     db.add_block_to_world(idWorld=idWorld, idBlock=2, x=x, y=y)
                     world.add_block(Block(2), x, y)
-                elif y <= surface_level + 3:  # dirt
+                elif y <= surface_level + 3:  # dir
                     db.add_block_to_world(idWorld=idWorld, idBlock=3, x=x, y=y)
                     world.add_block(Block(3), x, y)
                 else:  # stone
                     scaled_value = (noise_world[x][y] + 1) / 2  # scale to range of 0 to 1
-                    if scaled_value > 0.5:  # more stone than dirt
+                    if scaled_value > 0.25:  # more stone than dirt
                         if random.random() < 0.05:  # 5% chance of placing a coal block
                             db.add_block_to_world(idWorld=idWorld, idBlock=8, x=x, y=y)  # coal block
                             world.add_block(Block(8), x, y)
@@ -90,12 +90,18 @@ class WorldCommand(commands.Cog):
         # add trees
         for block in world.get_blocks():
             if block.get_id() == 2:  # if it's grass
-                if world.get_block(block.get_x_pos() + 1, block.get_y_pos() - 1):
-                    if world.get_block(block.get_x_pos() + 1, block.get_y_pos() - 1).get_id() != 1:
-                        continue
-                if world.get_block(block.get_x_pos() - 1, block.get_y_pos() - 1):
-                    if world.get_block(block.get_x_pos() - 1, block.get_y_pos() - 1).get_id() != 1:
-                        continue
+                if world.get_block(block.get_x_pos() + 1, block.get_y_pos() - 2):
+                    idBlock = world.get_block(block.get_x_pos() + 1, block.get_y_pos() - 2).get_id()
+                    if idBlock != 1: # is it NOT air?
+                        if idBlock != 5:
+                            if idBlock != 6:
+                                continue
+                if world.get_block(block.get_x_pos() - 1, block.get_y_pos() - 2):
+                    idBlock = world.get_block(block.get_x_pos() - 1, block.get_y_pos() - 2).get_id()
+                    if idBlock != 1: # is it NOT air?
+                        if idBlock != 5:
+                            if idBlock != 6:
+                                continue
 
                 if random.uniform(0, 1) < TREE_CHANCE:
                     # spawn a tree

@@ -36,7 +36,7 @@ class WorldGameView(discord.ui.View):
 async def render_world(user, world, interaction):
     user.update_user(world=world)
     # define the view range
-    view_range_width = 12
+    view_range_width = 15
     view_range_height = 8
 
     # calculate the starting and ending coordinates of the view range
