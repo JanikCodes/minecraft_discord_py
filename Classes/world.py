@@ -26,9 +26,10 @@ class World:
         return self.blocks
 
     def add_block(self, block, x, y):
+        db.add_block_to_world(idWorld=self.id, idBlock=block.get_id(), x=x, y=y)
+
         exist_block = self.get_block(x,y)
         if exist_block:
-            print("Replaced block!")
             index = self.blocks.index(exist_block)
             self.blocks[index] = block
         else:

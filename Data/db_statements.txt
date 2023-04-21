@@ -1,9 +1,9 @@
 
 
 
-insert into world_sizes value(NULL, "small", 25, 25);
-insert into world_sizes value(NULL, "medium", 50, 50);
-insert into world_sizes value(NULL, "big", 100, 100);
+insert into world_sizes value(1, "small", 25, 35);
+insert into world_sizes value(2, "medium", 50, 35);
+insert into world_sizes value(3, "big", 100, 35);
 
 INSERT INTO block_types VALUE(1, "normal");
 
@@ -15,3 +15,5 @@ INSERT into blocks VALUE(5, "grass01", 1, 0, "bgd1");
 INSERT into blocks VALUE(6, "grass02", 1, 0, "bgd2");
 INSERT into blocks VALUE(7, "glassblock", 1, 1, "bg");
 INSERT into blocks VALUE(8, "coalblock", 1, 1, "bc");
+INSERT into blocks VALUE(9, "logblock", 1, 1, "bw");
+INSERT into blocks VALUE(10, "leafblock", 1, 1, "bl");

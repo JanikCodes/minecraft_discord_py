@@ -1,7 +1,6 @@
 import random
 
 import discord
-import noise as noise
 from discord import app_commands
 
 from Classes.block import Block
@@ -9,25 +8,15 @@ from Classes.world_size import WorldSize
 from Classes.world import World
 from discord.ext import commands
 import db
-from Utils import utils
-import noise
 
-# Define block distribution
-GRASS_DISTRIBUTION = 0.2
-DIRT_DISTRIBUTION = 0.5
-STONE_DISTRIBUTION = 0.3
-
-# Define perlin noise parameters
-OCTAVES = 6
-PERSISTENCE = 0.5
-LACUNARITY = 2.0
+SURFACE_HEIGHT_MAX = 3
+TREE_HEIGHT = 3
+TREE_CHANCE = 0.10
+GRASS_CHANCE = 0.50
 
 class WorldCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
-        self.scale = 50  # adjust this to control the roughness of the terrain
-        self.threshold = 0.1  # adjust this to control the height of the terrain
-        self.seed = 4 # adjust this to change the world seed
 
     @app_commands.command(name="world", description="Is used to generate a new world.")
     @app_commands.choices(world_size=[
@@ -63,7 +52,7 @@ class WorldCommand(commands.Cog):
             for y in range(world.get_world_size().get_y()):
                 surface_level = world.get_world_size().get_y() // 2  # surface at the middle of the map
                 noise_value = noise_world[x][y]
-                surface_level += int((noise_value - 0.5) * 3)  # adjust surface level based on noise value
+                surface_level += int((noise_value - 0.5) * SURFACE_HEIGHT_MAX)  # adjust surface level based on noise value
 
                 if y <= surface_level:  # air
                     db.add_block_to_world(idWorld=idWorld, idBlock=1, x=x, y=y)
@@ -71,7 +60,7 @@ class WorldCommand(commands.Cog):
                 elif y == surface_level + 1:  # grass
                     db.add_block_to_world(idWorld=idWorld, idBlock=2, x=x, y=y)
                     world.add_block(Block(2), x, y)
-                elif y <= surface_level + 4:  # dirt
+                elif y <= surface_level + 3:  # dirt
                     db.add_block_to_world(idWorld=idWorld, idBlock=3, x=x, y=y)
                     world.add_block(Block(3), x, y)
                 else:  # stone
@@ -87,15 +76,59 @@ class WorldCommand(commands.Cog):
                         db.add_block_to_world(idWorld=idWorld, idBlock=3, x=x, y=y)
                         world.add_block(Block(3), x, y)
 
+        # add grass
         for block in world.get_blocks():
             if block.get_id() == 2: # if it's grass
-                if random.uniform(0, 1) > 0.5:
+                if random.uniform(0, 1) > GRASS_CHANCE:
                     if random.uniform(0, 1) > 0.5:
                         db.add_block_to_world(idWorld=idWorld, idBlock=5, x=block.get_x_pos(), y=block.get_y_pos() - 1)
+                        world.add_block(block=Block(5), x=block.get_x_pos(), y=block.get_y_pos() - 1)
                     else:
                         db.add_block_to_world(idWorld=idWorld, idBlock=6, x=block.get_x_pos(), y=block.get_y_pos() - 1)
+                        world.add_block(block=Block(6), x=block.get_x_pos(), y=block.get_y_pos() - 1)
+
+        # add trees
+        for block in world.get_blocks():
+            if block.get_id() == 2:  # if it's grass
+                if world.get_block(block.get_x_pos() + 1, block.get_y_pos() - 1):
+                    if world.get_block(block.get_x_pos() + 1, block.get_y_pos() - 1).get_id() != 1:
+                        continue
+                if world.get_block(block.get_x_pos() - 1, block.get_y_pos() - 1):
+                    if world.get_block(block.get_x_pos() - 1, block.get_y_pos() - 1).get_id() != 1:
+                        continue
+
+                if random.uniform(0, 1) < TREE_CHANCE:
+                    # spawn a tree
+                    generate_tree(world=world, block=block, height=TREE_HEIGHT)
 
         print(f"Done!")
+
+def generate_tree(world, block, height):
+    idWorld = world.get_id()
+    print("Placed a tree!")
+
+    for i in range(1, height + 1):
+        # add log blocks
+        world.add_block(block=Block(9), x=block.get_x_pos(), y=block.get_y_pos() - i)
+
+    # add leaves
+    world.add_block(block=Block(10), x=block.get_x_pos() - 1, y=block.get_y_pos() - height)
+    world.add_block(block=Block(10), x=block.get_x_pos(), y=block.get_y_pos() - height)
+    world.add_block(block=Block(10), x=block.get_x_pos() + 1, y=block.get_y_pos() - height)
+
+    world.add_block(block=Block(10), x=block.get_x_pos() - 2, y=block.get_y_pos() - height)
+    world.add_block(block=Block(10), x=block.get_x_pos() + 2, y=block.get_y_pos() - height)
+
+    world.add_block(block=Block(10), x=block.get_x_pos() - 1, y=block.get_y_pos() - height - 1)
+    world.add_block(block=Block(10), x=block.get_x_pos(), y=block.get_y_pos() - height - 1)
+    world.add_block(block=Block(10), x=block.get_x_pos() + 1, y=block.get_y_pos() - height - 1)
+
+    world.add_block(block=Block(10), x=block.get_x_pos() - 2, y=block.get_y_pos() - height - 1)
+    world.add_block(block=Block(10), x=block.get_x_pos() + 2, y=block.get_y_pos() - height - 1)
+
+    world.add_block(block=Block(10), x=block.get_x_pos() - 1, y=block.get_y_pos() - height - 2)
+    world.add_block(block=Block(10), x=block.get_x_pos(), y=block.get_y_pos() - height - 2)
+    world.add_block(block=Block(10), x=block.get_x_pos() + 1, y=block.get_y_pos() - height - 2)
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(WorldCommand(client))
