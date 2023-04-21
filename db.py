@@ -58,9 +58,10 @@ def add_block_to_world(idWorld, idBlock, x, y):
     res = cursor.fetchone()
     if res:
         # update the block
-        sql = f"UPDATE worlds_has_blocks SET idBlock = {idBlock} WHERE idWorld = {idWorld};"
+        sql = f"UPDATE worlds_has_blocks SET idBlock = {idBlock} WHERE idWorld = {idWorld} AND x = {x} AND y = {y};"
         cursor.execute(sql)
         mydb.commit()
+        print(f"replaced block at: {x},{y}")
     else:
         # There doesnt exist a block yet
         sql = f"INSERT INTO worlds_has_blocks VALUE(NULL, {idWorld}, {idBlock}, {x}, {y});"

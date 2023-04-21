@@ -3,6 +3,8 @@ import random
 import discord
 import noise as noise
 from discord import app_commands
+
+from Classes.block import Block
 from Classes.world_size import WorldSize
 from Classes.world import World
 from discord.ext import commands
@@ -48,32 +50,60 @@ class WorldCommand(commands.Cog):
 
         await interaction.response.send_message(embed=embed)
 
+        air = 0
+        grass = 0
+        dirt = 0
+        stone = 0
+        grass_decorations = 0
+
         # generate noise map
         noise_world = []
         for x in range(world.get_world_size().get_x()):
-            noise_row = []
             for y in range(world.get_world_size().get_y()):
-                noise_value = noise.snoise2(x / 20, y / 20)
+                random.seed((idWorld, x, y))  # use world ID, x, and y as seed
+                noise_value = random.uniform(-1, 1)
                 scaled_value = (noise_value + 1) / 2  # scale to range of 0 to 1
-                noise_row.append(scaled_value)
-            noise_world.append(noise_row)
-
-        surface_level = world.get_world_size().get_y() // 2  # surface at the middle of the map
+                noise_world.append([scaled_value] * world.get_world_size().get_y())
 
         for x in range(world.get_world_size().get_x()):
             for y in range(world.get_world_size().get_y()):
+                surface_level = world.get_world_size().get_y() // 2  # surface at the middle of the map
+                noise_value = noise_world[x][y]
+                surface_level += int((noise_value - 0.5) * 3)  # adjust surface level based on noise value
+
                 if y <= surface_level:  # air
                     db.add_block_to_world(idWorld=idWorld, idBlock=1, x=x, y=y)
+                    world.add_block(Block(1), x, y)
+                    air+=1
                 elif y == surface_level + 1:  # grass
                     db.add_block_to_world(idWorld=idWorld, idBlock=2, x=x, y=y)
+                    world.add_block(Block(2), x, y)
+                    grass += 1
                 elif y <= surface_level + 4:  # dirt
                     db.add_block_to_world(idWorld=idWorld, idBlock=3, x=x, y=y)
+                    world.add_block(Block(3), x, y)
+                    dirt += 1
                 else:  # stone
                     scaled_value = (noise_world[x][y] + 1) / 2  # scale to range of 0 to 1
                     if scaled_value > 0.5:  # more stone than dirt
                         db.add_block_to_world(idWorld=idWorld, idBlock=4, x=x, y=y)
+                        world.add_block(Block(4), x, y)
+                        stone += 1
                     else:  # more dirt than stone
                         db.add_block_to_world(idWorld=idWorld, idBlock=3, x=x, y=y)
+                        world.add_block(Block(3), x, y)
+                        dirt += 1
+
+        for block in world.get_blocks():
+            if block.get_id() == 2: # if it's grass
+                if random.uniform(0, 1) > 0.5:
+                    if random.uniform(0, 1) > 0.5:
+                        db.add_block_to_world(idWorld=idWorld, idBlock=5, x=block.get_x_pos(), y=block.get_y_pos() - 1)
+                    else:
+                        db.add_block_to_world(idWorld=idWorld, idBlock=6, x=block.get_x_pos(), y=block.get_y_pos() - 1)
+                    grass_decorations+=1
+
+        print(f"Air: {air}, Grass: {grass}, Dirt: {dirt}, Stone: {stone}, Grass_Deco: {grass_decorations}")
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(WorldCommand(client))

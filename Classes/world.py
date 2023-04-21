@@ -25,14 +25,20 @@ class World:
     def get_blocks(self):
         return self.blocks
 
+    def add_block(self, block, x, y):
+        exist_block = self.get_block(x,y)
+        if exist_block:
+            print("Replaced block!")
+            index = self.blocks.index(exist_block)
+            self.blocks[index] = block
+        else:
+            block.set_x_pos(x)
+            block.set_y_pos(y)
+            self.blocks.append(block)
+
     def get_block(self, x, y):
         for block in self.blocks:
             if block.get_x_pos() == x and block.get_y_pos() == y:
                 return block
 
-        # no block was found, so it needs to be air
-        print("Return air block")
-        air_block = Block(id=1)
-        air_block.set_x_pos(x)
-        air_block.set_y_pos(y)
-        return air_block
+        return None
