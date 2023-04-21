@@ -53,9 +53,19 @@ def get_world_size(idSize):
         return None
 
 def add_block_to_world(idWorld, idBlock, x, y):
-    sql = f"INSERT INTO worlds_has_blocks VALUE(NULL, {idWorld}, {idBlock}, {x}, {y});"
+    sql = f"SELECT idRel FROM worlds_has_blocks WHERE idWorld = {idWorld} AND x = {x} AND y = {y};"
     cursor.execute(sql)
-    mydb.commit()
+    res = cursor.fetchone()
+    if res:
+        # update the block
+        sql = f"UPDATE worlds_has_blocks SET idBlock = {idBlock} WHERE idWorld = {idWorld};"
+        cursor.execute(sql)
+        mydb.commit()
+    else:
+        # There doesnt exist a block yet
+        sql = f"INSERT INTO worlds_has_blocks VALUE(NULL, {idWorld}, {idBlock}, {x}, {y});"
+        cursor.execute(sql)
+        mydb.commit()
 
 def get_world(idWorld):
     sql = f"SELECT idWorld, owner, name, idSize FROM worlds WHERE idWorld = {idWorld};"
