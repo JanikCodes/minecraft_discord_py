@@ -55,6 +55,7 @@ class WorldCommand(commands.Cog):
         dirt = 0
         stone = 0
         grass_decorations = 0
+        coal = 0
 
         # generate noise map
         noise_world = []
@@ -86,9 +87,14 @@ class WorldCommand(commands.Cog):
                 else:  # stone
                     scaled_value = (noise_world[x][y] + 1) / 2  # scale to range of 0 to 1
                     if scaled_value > 0.5:  # more stone than dirt
-                        db.add_block_to_world(idWorld=idWorld, idBlock=4, x=x, y=y)
-                        world.add_block(Block(4), x, y)
-                        stone += 1
+                        if random.random() < 0.05:  # 5% chance of placing a coal block
+                            db.add_block_to_world(idWorld=idWorld, idBlock=8, x=x, y=y)  # coal block
+                            world.add_block(Block(8), x, y)
+                            coal += 1
+                        else:
+                            db.add_block_to_world(idWorld=idWorld, idBlock=4, x=x, y=y)  # stone block
+                            world.add_block(Block(4), x, y)
+                            stone += 1
                     else:  # more dirt than stone
                         db.add_block_to_world(idWorld=idWorld, idBlock=3, x=x, y=y)
                         world.add_block(Block(3), x, y)
@@ -103,7 +109,7 @@ class WorldCommand(commands.Cog):
                         db.add_block_to_world(idWorld=idWorld, idBlock=6, x=block.get_x_pos(), y=block.get_y_pos() - 1)
                     grass_decorations+=1
 
-        print(f"Air: {air}, Grass: {grass}, Dirt: {dirt}, Stone: {stone}, Grass_Deco: {grass_decorations}")
+        print(f"Air: {air}, Grass: {grass}, Dirt: {dirt}, Stone: {stone}, Grass_Deco: {grass_decorations}, Coal: {coal}")
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(WorldCommand(client))
