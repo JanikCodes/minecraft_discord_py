@@ -133,3 +133,17 @@ def update_user_position(idUser, idWorld, new_x, new_y):
         sql = f"UPDATE worlds_has_users SET y = y + {new_y} WHERE idUser = {idUser} AND idWorld = {idWorld};"
         cursor.execute(sql)
         mydb.commit()
+
+
+def delete_all_worlds():
+    sql = f"DELETE FROM worlds_has_users;"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"DELETE FROM worlds_has_blocks;"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"DELETE FROM worlds;"
+    cursor.execute(sql)
+    mydb.commit()

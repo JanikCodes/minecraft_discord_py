@@ -9,11 +9,10 @@ from Classes.world import World
 from discord.ext import commands
 import db
 
-SURFACE_HEIGHT_MAX = 3
+SURFACE_HEIGHT_MAX = 4
 TREE_HEIGHT = 3
-TREE_CHANCE = 0.10
-GRASS_CHANCE = 0.50
-CAVE_THRESHOLD = 0.5
+TREE_CHANCE = 0.20
+GRASS_CHANCE = 0.65
 
 class WorldCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -31,8 +30,7 @@ class WorldCommand(commands.Cog):
 
         idWorld = db.add_world(idUser=interaction.user.id, world_name=selected_world_name, world_size=selected_world_size)
         world = World(id=idWorld)
-
-        random.seed(idWorld)  # use world ID as seed
+        random.seed(str(idWorld))  # use world ID as seed
 
         embed = discord.Embed(title=f"World Generation",
                               description=f"Currently generating a **{selected_world_size.get_name()}** sized world named `{selected_world_name}`...\n"
@@ -44,7 +42,7 @@ class WorldCommand(commands.Cog):
         noise_world = []
         for x in range(world.get_world_size().get_x()):
             for y in range(world.get_world_size().get_y()):
-                random.seed((idWorld, x, y))  # use world ID, x, and y as seed
+                random.seed(str(idWorld) + str(x) + str(y))  # use world ID, x, and y as seed
                 noise_value = random.uniform(-1, 1)
                 scaled_value = (noise_value + 1) / 2  # scale to range of 0 to 1
                 noise_world.append([scaled_value] * world.get_world_size().get_y())
