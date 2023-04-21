@@ -47,6 +47,7 @@ class WorldCommand(commands.Cog):
                 scaled_value = (noise_value + 1) / 2  # scale to range of 0 to 1
                 noise_world.append([scaled_value] * world.get_world_size().get_y())
 
+        print("Generating world..")
         for x in range(world.get_world_size().get_x()):
             for y in range(world.get_world_size().get_y()):
                 surface_level = world.get_world_size().get_y() // 2  # surface at the middle of the map
@@ -76,6 +77,7 @@ class WorldCommand(commands.Cog):
                         world.add_block(Block(3), x, y)
 
         # add grass
+        print("Generating grass..")
         for block in world.get_blocks():
             if block.get_id() == 2: # if it's grass
                 if random.uniform(0, 1) > GRASS_CHANCE:
@@ -87,6 +89,7 @@ class WorldCommand(commands.Cog):
                         world.add_block(block=Block(6), x=block.get_x_pos(), y=block.get_y_pos() - 1)
 
         # add trees
+        print("Generating trees..")
         for block in world.get_blocks():
             if block.get_id() == 2:  # if it's grass
                 if world.get_block(block.get_x_pos() + 1, block.get_y_pos() - 2):
@@ -105,12 +108,23 @@ class WorldCommand(commands.Cog):
                 if random.uniform(0, 1) < TREE_CHANCE:
                     # spawn a tree
                     generate_tree(world=world, block=block, height=TREE_HEIGHT)
-        print(f"Done!")
+
+        # Find valid spawn position
+        for block in world.get_blocks():
+            if block.get_id() == 2:
+                # is first block free?
+                if world.get_block(block.get_x_pos(), block.get_y_pos() - 1):
+                    if world.get_block(block.get_x_pos(), block.get_y_pos() - 1).get_id() == 1:
+                        # is second block also free?
+                        if world.get_block(block.get_x_pos(), block.get_y_pos() - 2):
+                            if world.get_block(block.get_x_pos(), block.get_y_pos() - 2).get_id() == 1:
+                                # found valid spawn position!
+                                db.add_user_to_world(idWorld=idWorld, idUser=interaction.user.id,x=block.get_x_pos(), y=block.get_y_pos() - 1)
+                                break
+
+        print("Finished generating!")
 
 def generate_tree(world, block, height):
-    idWorld = world.get_id()
-    print("Placed a tree!")
-
     for i in range(1, height + 1):
         # add log blocks
         world.add_block(block=Block(9), x=block.get_x_pos(), y=block.get_y_pos() - i)
