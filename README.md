@@ -4,9 +4,9 @@
 
 ## Features
 - [x] World generation
-- [ ] Dynamic tree & decoration generation
-- [ ] 2 block high player model
+- [X] Dynamic tree & decoration generation
+- [x] 2 block high player model
 - [ ] Player animations
-- [ ] Server creation
+- [x] Server creation
 - [ ] Invite players to server
-- [ ] Network replication
+- [x] Network replication
