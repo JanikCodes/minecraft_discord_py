@@ -1,4 +1,4 @@
-## Mini multiplayer playable minecraft in discord<br> [![GitStars][gitstar]][tmux-url]
+## Mini multiplayer playable minecraft in discord<br>
 This project is a mini version of minecraft/terraria featuring a `procedural generated world` with the ability to invite friends to play in your world.
 Each `world` kind of acts like a server, so once you invite a friend to play in your `world` they can modify it and move around even while you're offline.
 
@@ -28,7 +28,6 @@ This section should list any major frameworks/libraries used to bootstrap your p
 [python]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
 [mysql]: https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white
 [tmux]: https://img.shields.io/badge/tmux-1BB91F?style=for-the-badge&logo=tmux&logoColor=white
-[gitstar]: https://img.shields.io/github/stars/JanikCodes/minecraft_discord_py.svg
 [tmux-url]: https://github.com/tmux/tmux/wiki
 [mysql-url]: https://www.mysql.com/
 [python-url]: https://www.python.org/
