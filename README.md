@@ -13,7 +13,7 @@ Each `world` kind of acts like a server, so once you invite a friend to play in 
 - [x] World generation
 - [X] Dynamic tree & decoration generation
 - [x] 2 block high player model
-- [ ] Player animations
+- [x] Player animations
 - [x] Server creation
 - [ ] Invite players to server
 - [x] Network replication
