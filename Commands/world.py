@@ -36,7 +36,10 @@ class WorldCommand(commands.Cog):
                               description=f"Currently generating a **{selected_world_size.get_name()}** sized world named `{selected_world_name}`...\n"
                                           f"You can try to **join your world** by typing `/play`")
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.defer()
+
+        await interaction.followup.send(embed=embed)
+
 
         # generate noise map
         noise_world = []

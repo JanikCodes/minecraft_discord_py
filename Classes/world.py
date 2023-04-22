@@ -47,16 +47,16 @@ class World:
     def does_user_lower_part_exist_at_pos(self, x, y):
         for user in self.users:
             if user.x == x and user.y == y:
-                return True
+                return user
 
-        return False
+        return None
 
     def does_user_upper_part_exist_at_pos(self, x, y):
         for user in self.users:
             if user.x == x and user.y - 1 == y:
-                return True
+                return user
 
-        return False
+        return None
 
     def update_world(self):
         res = db.get_world(idWorld=self.id)

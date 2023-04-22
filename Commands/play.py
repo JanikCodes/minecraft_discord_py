@@ -28,6 +28,10 @@ class MoveButton(discord.ui.Button):
 
         await interaction.response.defer()
 
+        # update player facing direction
+        if self.dir_x != 0:
+            db.update_user_direction(idUser=self.user.get_id(), idWorld=self.world.get_id(), direction=self.dir_x)
+
         # do we have a block at that location?
         lower_block = self.world.get_block(self.user.get_x_pos() + self.dir_x, self.user.get_y_pos() + self.dir_y)
         if lower_block:
@@ -36,8 +40,8 @@ class MoveButton(discord.ui.Button):
                 if upper_block:
                     if not upper_block.get_is_solid():
                         db.update_user_position(idUser=self.user.get_id(), idWorld=self.world.get_id(), new_x=self.dir_x, new_y=self.dir_y)
-            else:
-                print("Obstacle!")
+
+
         await render_world(user=self.user, world=self.world, interaction=interaction)
 
 class WorldGameView(discord.ui.View):
@@ -72,15 +76,14 @@ async def render_world(user, world, interaction):
     for y in range(start_y, end_y + 1):
         row = ""
         for x in range(start_x, end_x + 1):
-            # generate player bodies on top of it
-            if world.does_user_lower_part_exist_at_pos(x, y):
-                player_lower_emoji = discord.utils.get(interaction.client.get_guild(570999180021989377).emojis,
-                                                name='p_l')
-                row += f"{player_lower_emoji}"
-            elif world.does_user_upper_part_exist_at_pos(x, y):
-                player_lower_emoji = discord.utils.get(interaction.client.get_guild(570999180021989377).emojis,
-                                                name='p_u')
-                row += f"{player_lower_emoji}"
+            # generate player bodies on top of it with correct facing direction
+            lower_body_user = world.does_user_lower_part_exist_at_pos(x, y)
+            upper_body_user = world.does_user_upper_part_exist_at_pos(x, y)
+
+            if lower_body_user:
+                row += f"{lower_body_user.get_lower_body_emoji(interaction=interaction)}"
+            elif upper_body_user:
+                row += f"{upper_body_user.get_upper_body_emoji(interaction=interaction)}"
             else:
                 block = world.get_block(x, y)
                 block_emoji = discord.utils.get(interaction.client.get_guild(570999180021989377).emojis,
