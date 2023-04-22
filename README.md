@@ -15,7 +15,7 @@ Each `world` kind of acts like a server, so once you invite a friend to play in 
 - [x] 2 block high player model
 - [x] Player animations
 - [x] Server creation
-- [ ] Invite players to server
+- [x] Invite players to server
 - [x] Network replication
 - [ ] Break blocks
 - [ ] Place blocks
