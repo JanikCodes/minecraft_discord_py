@@ -62,3 +62,16 @@ class World:
         res = db.get_world(idWorld=self.id)
         self.blocks = db.get_world_blocks(idWorld=res[0])
         self.users = db.get_all_users_in_world(idWorld=res[0])
+
+    def find_valid_spawn_position(self):
+        for block in self.blocks:
+            if block.get_id() == 2:
+                # is first block free?
+                if self.get_block(block.get_x_pos(), block.get_y_pos() - 1):
+                    if self.get_block(block.get_x_pos(), block.get_y_pos() - 1).get_id() == 1:
+                        # is second block also free?
+                        if self.get_block(block.get_x_pos(), block.get_y_pos() - 2):
+                            if self.get_block(block.get_x_pos(), block.get_y_pos() - 2).get_id() == 1:
+                                # found valid spawn position!
+                                return block.get_x_pos(), block.get_y_pos() - 1
+        return 0, 0

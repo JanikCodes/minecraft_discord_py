@@ -72,9 +72,12 @@ def get_world(idWorld):
     else:
         return None
 
-def get_all_worlds_from_user(idUser):
+def get_all_worlds_from_user(idUser, own_worlds_only=False):
     worlds = []
-    sql = f"select w.idWorld FROM worlds w, worlds_has_users r WHERE r.idWorld = w.idWorld AND r.idUser = {idUser};"
+    if own_worlds_only:
+        sql = f"select w.idWorld FROM worlds w, worlds_has_users r WHERE r.idWorld = w.idWorld AND r.idUser = {idUser} AND w.owner = {idUser};"
+    else:
+        sql = f"select w.idWorld FROM worlds w, worlds_has_users r WHERE r.idWorld = w.idWorld AND r.idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
@@ -177,3 +180,14 @@ def update_user_direction(idUser, idWorld, direction):
         sql = f"UPDATE worlds_has_users SET direction = {direction} WHERE idWorld = {idWorld} AND idUser = {idUser};"
         cursor.execute(sql)
         mydb.commit()
+
+def get_world_count_from_user(idUser, own_worlds_only=False):
+    if own_worlds_only:
+        sql = f"SELECT Count(*) FROM worlds w WHERE w.owner = {idUser};"
+    else:
+        sql = f"SELECT COUNT(*) FROM worlds w, worlds_has_users r WHERE r.idWorld = w.idWorld AND r.idUser = {idUser};"
+
+    cursor.execute(sql)
+    number = str(cursor.fetchone()).strip("(,)")
+    if number:
+        return int(number)

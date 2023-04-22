@@ -111,18 +111,8 @@ class WorldCommand(commands.Cog):
                     # spawn a tree
                     generate_tree(world=world, block=block, height=TREE_HEIGHT)
 
-        # Find valid spawn position
-        for block in world.get_blocks():
-            if block.get_id() == 2:
-                # is first block free?
-                if world.get_block(block.get_x_pos(), block.get_y_pos() - 1):
-                    if world.get_block(block.get_x_pos(), block.get_y_pos() - 1).get_id() == 1:
-                        # is second block also free?
-                        if world.get_block(block.get_x_pos(), block.get_y_pos() - 2):
-                            if world.get_block(block.get_x_pos(), block.get_y_pos() - 2).get_id() == 1:
-                                # found valid spawn position!
-                                db.add_user_to_world(idWorld=idWorld, idUser=interaction.user.id,x=block.get_x_pos(), y=block.get_y_pos() - 1)
-                                break
+        spawn_x, spawn_y = world.find_valid_spawn_position()
+        db.add_user_to_world(idWorld=world.get_id(), idUser=interaction.user.id, x=spawn_x, y=spawn_y)
 
         print("Finished generating!")
 

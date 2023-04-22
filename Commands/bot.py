@@ -22,14 +22,11 @@ class BotCommand(commands.Cog):
 
     @app_commands.command(name="bot", description="Invite this bot to your server!")
     async def bot(self, interaction: discord.Interaction):
-        try:
-            embed = discord.Embed(title=f"Invite MiniMc",
-                                  description=f"Thanks in case you want to invite me to your server! 💕\n"
-                                              f"*Don't worry!* your progress is universal!")
+        embed = discord.Embed(title=f"Invite MiniMc",
+                              description=f"Thanks in case you want to invite me to your server! 💕\n"
+                                          f"*Don't worry!* your progress is universal!")
 
-            await interaction.response.send_message(embed=embed, view=InviteView())
-        except Exception as e:
-            await self.client.send_error_message(e)
+        await interaction.response.send_message(embed=embed, view=InviteView())
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(BotCommand(client))

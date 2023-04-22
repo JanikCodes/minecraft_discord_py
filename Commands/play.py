@@ -142,7 +142,14 @@ class PlayCommand(commands.Cog):
         embed = discord.Embed(title=f"World Selection",
                               description=f"Please select a world to play on.")
 
-        await interaction.response.send_message(embed=embed, view=WorldSelectionView(idUser=interaction.user.id))
+        # does user have at least one world?
+        print(db.get_world_count_from_user(idUser=interaction.user.id))
+        if db.get_world_count_from_user(idUser=interaction.user.id) == 0:
+            embed.colour = discord.Color.red()
+            embed.set_footer(text="You don't have any world ready right now! You can create one with /world")
+            await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message(embed=embed, view=WorldSelectionView(idUser=interaction.user.id))
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(PlayCommand(client))
