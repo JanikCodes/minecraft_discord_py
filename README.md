@@ -17,8 +17,8 @@ Each `world` kind of acts like a server, so once you invite a friend to play in 
 - [x] Server creation
 - [x] Invite players to server
 - [x] Network replication
-- [ ] Break blocks
-- [ ] Place blocks
+- [x] Break blocks
+- [x] Place blocks
 - [ ] Player and block physics
 
 <!-- MARKDOWN LINKS & IMAGES -->
