@@ -5,9 +5,6 @@ Each `world` kind of acts like a server, so once you invite a friend to play in 
 ![image](https://user-images.githubusercontent.com/72082960/233780883-53c56b85-ba5f-479e-be31-34c2af6273de.png)
 
 ### Built With
-
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
 [![Python][python]][python-url]
 [![MySQL][mysql]][mysql-url]
 [![Tmux][tmux]][tmux-url]
