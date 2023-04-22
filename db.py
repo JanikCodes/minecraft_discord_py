@@ -112,11 +112,11 @@ def get_world_blocks(idWorld):
 
 
 def get_user_in_world(idUser, idWorld):
-    sql = f"SELECT idUser, x, y, direction FROM worlds_has_users WHERE idWorld = {idWorld} AND idUser = {idUser};"
+    sql = f"SELECT idUser, x, y, direction, hand_mode FROM worlds_has_users WHERE idWorld = {idWorld} AND idUser = {idUser};"
     cursor.execute(sql)
     res = cursor.fetchone()
     if res:
-        return User(res[0], res[1], res[2], res[3])
+        return User(res[0], res[1], res[2], res[3], res[4])
 
     return None
 
@@ -156,18 +156,18 @@ def delete_all_worlds():
 
 
 def add_user_to_world(idWorld, idUser, x, y):
-    sql = f"INSERT INTO worlds_has_users VALUE(NULL, {idWorld}, {idUser}, {x}, {y}, 1);"
+    sql = f"INSERT INTO worlds_has_users VALUE(NULL, {idWorld}, {idUser}, {x}, {y}, 1, 'break');"
     cursor.execute(sql)
     mydb.commit()
 
 def get_all_users_in_world(idWorld):
     users = []
-    sql = f"SELECT idUser, x, y, direction FROM worlds_has_users WHERE idWorld = {idWorld};"
+    sql = f"SELECT idUser, x, y, direction, hand_mode FROM worlds_has_users WHERE idWorld = {idWorld};"
     cursor.execute(sql)
     res = cursor.fetchall()
     if res:
         for row in res:
-            users.append(User(row[0], row[1], row[2], row[3]))
+            users.append(User(row[0], row[1], row[2], row[3], row[4]))
 
         return users
     return None

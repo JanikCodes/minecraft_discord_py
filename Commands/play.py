@@ -5,6 +5,18 @@ import db
 
 from Classes.world import World
 
+class BreakModeButton(discord.ui.Button):
+    def __init__(self, row):
+        super().__init__(label="Break", style=discord.ButtonStyle.danger, row=row, disabled=False)
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
+class BuildModeButton(discord.ui.Button):
+    def __init__(self, row):
+        super().__init__(label="Build", style=discord.ButtonStyle.primary, row=row, disabled=False)
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
 class BlankButton(discord.ui.Button):
     def __init__(self, row):
         super().__init__(label=".", style=discord.ButtonStyle.grey, row=row, disabled=True)
@@ -50,9 +62,11 @@ class WorldGameView(discord.ui.View):
         self.add_item(BlankButton(row=1))
         self.add_item(MoveButton(label="Up", user=user, dir_x=0, dir_y=-1, world=world, row=1))
         self.add_item(BlankButton(row=1))
+        self.add_item(BreakModeButton(row=1))
         self.add_item(MoveButton(label="Left", user=user, dir_x=-1, dir_y=0, world=world, row=2))
         self.add_item(BlankButton(row=2))
         self.add_item(MoveButton(label="Right", user=user, dir_x=1, dir_y=0, world=world, row=2))
+        self.add_item(BuildModeButton(row=2))
         self.add_item(BlankButton(row=3))
         self.add_item(MoveButton(label="Down", user=user, dir_x=0, dir_y=1, world=world, row=3))
         self.add_item(BlankButton(row=3))
@@ -102,7 +116,6 @@ async def render_world(user, world, interaction):
     edited_embed.colour = discord.Color.light_embed()
 
     return await interaction.message.edit(embed=edited_embed, view=WorldGameView(user=user, world=world))
-
 class WorldSelect(discord.ui.Select):
     def __init__(self, idUser):
         super().__init__(placeholder="Choose a world..")
