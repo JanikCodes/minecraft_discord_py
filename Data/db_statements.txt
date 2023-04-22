@@ -1,6 +1,4 @@
 
-
-
 insert into world_sizes value(1, "small", 25, 35);
 insert into world_sizes value(2, "medium", 50, 35);
 insert into world_sizes value(3, "big", 100, 35);

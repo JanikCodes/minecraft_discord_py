@@ -6,22 +6,69 @@ import db
 from Classes.world import World
 
 class BreakModeButton(discord.ui.Button):
-    def __init__(self, row):
+    def __init__(self, world, user, row):
         super().__init__(label="Break", style=discord.ButtonStyle.danger, row=row, disabled=False)
+        self.world = world
+        self.user = user
     async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != self.user.get_id():
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
         await interaction.response.defer()
 
+        db.update_user_hand_mode(idUser=interaction.user.id, idWorld=self.world.get_id(), new_hand_mode="break")
+
+        await render_world(user=self.user, world=self.world, interaction=interaction)
 class BuildModeButton(discord.ui.Button):
-    def __init__(self, row):
+    def __init__(self, world, user, row):
         super().__init__(label="Build", style=discord.ButtonStyle.primary, row=row, disabled=False)
+        self.world = world
+        self.user = user
     async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != self.user.get_id():
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
         await interaction.response.defer()
 
-class BlankButton(discord.ui.Button):
-    def __init__(self, row):
-        super().__init__(label=".", style=discord.ButtonStyle.grey, row=row, disabled=True)
+        db.update_user_hand_mode(idUser=interaction.user.id, idWorld=self.world.get_id(), new_hand_mode="build")
+
+        await render_world(user=self.user, world=self.world, interaction=interaction)
+class HandButton(discord.ui.Button):
+    def __init__(self, hand_mode, world, user, x, y, row):
+        super().__init__(style=discord.ButtonStyle.grey, row=row, disabled=False)
+        self.user = user
+        self.y = y
+        self.x = x
+        self.hand_mode = hand_mode
+        self.world = world
+
+        match hand_mode:
+            case 'break':
+                self.emoji = "🪓"
+            case 'build':
+                self.emoji = "🧊"
     async def callback(self, interaction: discord.Interaction):
+        if interaction.user.id != self.user.get_id():
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
         await interaction.response.defer()
+
+        match self.hand_mode:
+            case 'break':
+                db.add_block_to_world(idWorld=self.world.get_id(), idBlock=1, x=self.user.get_x_pos() + self.x, y=self.user.get_y_pos() + self.y)
+            case 'build':
+                db.add_block_to_world(idWorld=self.world.get_id(), idBlock=4, x=self.user.get_x_pos() + self.x, y=self.user.get_y_pos() + self.y)
+
+        await render_world(user=self.user, world=self.world, interaction=interaction)
 
 class MoveButton(discord.ui.Button):
     def __init__(self, label, user, dir_x, dir_y, world, row):
@@ -59,17 +106,19 @@ class MoveButton(discord.ui.Button):
 class WorldGameView(discord.ui.View):
     def __init__(self, user, world):
         super().__init__()
-        self.add_item(BlankButton(row=1))
+        #user.update_user(world=world)
+        hand_mode = user.get_hand_mode()
+        self.add_item(HandButton(hand_mode=hand_mode, user=user, world=world, x=-1, y=-1, row=1)) #top-left
         self.add_item(MoveButton(label="Up", user=user, dir_x=0, dir_y=-1, world=world, row=1))
-        self.add_item(BlankButton(row=1))
-        self.add_item(BreakModeButton(row=1))
+        self.add_item(HandButton(hand_mode=hand_mode, user=user, world=world, x=1, y=-1, row=1)) #top-right
+        self.add_item(BreakModeButton(world=world, user=user, row=1))
         self.add_item(MoveButton(label="Left", user=user, dir_x=-1, dir_y=0, world=world, row=2))
-        self.add_item(BlankButton(row=2))
+        self.add_item(HandButton(hand_mode=hand_mode, user=user, world=world, x=user.get_direction(), y=0, row=2)) #center
         self.add_item(MoveButton(label="Right", user=user, dir_x=1, dir_y=0, world=world, row=2))
-        self.add_item(BuildModeButton(row=2))
-        self.add_item(BlankButton(row=3))
+        self.add_item(BuildModeButton(world=world, user=user, row=2))
+        self.add_item(HandButton(hand_mode=hand_mode, user=user, world=world, x=-1, y=1, row=3)) #bottom-left
         self.add_item(MoveButton(label="Down", user=user, dir_x=0, dir_y=1, world=world, row=3))
-        self.add_item(BlankButton(row=3))
+        self.add_item(HandButton(hand_mode=hand_mode, user=user, world=world, x=1, y=1, row=3)) #bottom-right
 
 async def render_world(user, world, interaction):
     world.update_world()
@@ -156,7 +205,6 @@ class PlayCommand(commands.Cog):
                               description=f"Please select a world to play on.")
 
         # does user have at least one world?
-        print(db.get_world_count_from_user(idUser=interaction.user.id))
         if db.get_world_count_from_user(idUser=interaction.user.id) == 0:
             embed.colour = discord.Color.red()
             embed.set_footer(text="You don't have any world ready right now! You can create one with /world")

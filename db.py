@@ -191,3 +191,13 @@ def get_world_count_from_user(idUser, own_worlds_only=False):
     number = str(cursor.fetchone()).strip("(,)")
     if number:
         return int(number)
+
+
+def update_user_hand_mode(idUser, idWorld, new_hand_mode):
+    sql = f"SELECT idRel FROM worlds_has_users WHERE idWorld = {idWorld} AND idUser = {idUser}"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        sql = f"UPDATE worlds_has_users SET hand_mode = '{new_hand_mode}' WHERE idWorld = {idWorld} AND idUser = {idUser};"
+        cursor.execute(sql)
+        mydb.commit()

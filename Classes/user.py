@@ -33,6 +33,7 @@ class User:
         self.x = user.get_x_pos()
         self.y = user.get_y_pos()
         self.direction = user.get_direction()
+        self.hand_mode = user.get_hand_mode()
 
     def get_upper_body_emoji(self, interaction):
         if self.direction == 1:
