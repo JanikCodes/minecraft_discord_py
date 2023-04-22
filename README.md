@@ -1,6 +1,16 @@
-## Playable multiplayer mini minecraft in Discord!<br>
+## Mini multiplayer playable minecraft in discord<br> [![GitStars][gitstar]][tmux-url]
+This project is a mini version of minecraft/terraria featuring a `procedural generated world` with the ability to invite friends to play in your world.
+Each `world` kind of acts like a server, so once you invite a friend to play in your `world` they can modify it and move around even while you're offline.
 
 ![image](https://user-images.githubusercontent.com/72082960/233780883-53c56b85-ba5f-479e-be31-34c2af6273de.png)
+
+### Built With
+
+This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+
+[![Python][python]][python-url]
+[![MySQL][mysql]][mysql-url]
+[![Tmux][tmux]][tmux-url]
 
 ## Features
 - [x] World generation
@@ -10,3 +20,15 @@
 - [x] Server creation
 - [ ] Invite players to server
 - [x] Network replication
+- [ ] Break blocks
+- [ ] Place blocks
+- [ ] Player and block physics
+
+<!-- MARKDOWN LINKS & IMAGES -->
+[python]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
+[mysql]: https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white
+[tmux]: https://img.shields.io/badge/tmux-1BB91F?style=for-the-badge&logo=tmux&logoColor=white
+[gitstar]: https://img.shields.io/github/stars/JanikCodes/minecraft_discord_py.svg
+[tmux-url]: https://github.com/tmux/tmux/wiki
+[mysql-url]: https://www.mysql.com/
+[python-url]: https://www.python.org/
