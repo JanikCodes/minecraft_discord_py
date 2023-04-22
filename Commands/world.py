@@ -40,7 +40,6 @@ class WorldCommand(commands.Cog):
 
         await interaction.followup.send(embed=embed)
 
-
         # generate noise map
         noise_world = []
         for x in range(world.get_world_size().get_x()):
