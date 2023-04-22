@@ -28,7 +28,13 @@ class MoveButton(discord.ui.Button):
 
         await interaction.response.defer()
 
-        db.update_user_position(idUser=self.user.get_id(), idWorld=self.world.get_id(), new_x=self.dir_x, new_y=self.dir_y)
+        # do we have a block at that location?
+        block = self.world.get_block(self.user.get_x_pos() + self.dir_x, self.user.get_y_pos() + self.dir_y)
+        if block:
+            if not block.get_is_solid():
+                db.update_user_position(idUser=self.user.get_id(), idWorld=self.world.get_id(), new_x=self.dir_x, new_y=self.dir_y)
+            else:
+                print("Obstacle!")
         await render_world(user=self.user, world=self.world, interaction=interaction)
 
 class WorldGameView(discord.ui.View):
@@ -45,10 +51,12 @@ class WorldGameView(discord.ui.View):
         self.add_item(BlankButton(row=3))
 
 async def render_world(user, world, interaction):
+    world.update_world()
     user.update_user(world=world)
+
     # define the view range
-    view_range_width = 15
-    view_range_height = 8
+    view_range_width = 13
+    view_range_height = 10
 
     # calculate the starting and ending coordinates of the view range
     start_x = max(0, user.get_x_pos() - view_range_width // 2)
@@ -61,11 +69,21 @@ async def render_world(user, world, interaction):
     for y in range(start_y, end_y + 1):
         row = ""
         for x in range(start_x, end_x + 1):
-            block = world.get_block(x, y)
-            block_emoji = discord.utils.get(interaction.client.get_guild(570999180021989377).emojis,
-                                            name=block.get_emoji())
+            # generate player bodies on top of it
+            if world.does_user_lower_part_exist_at_pos(x, y):
+                player_lower_emoji = discord.utils.get(interaction.client.get_guild(570999180021989377).emojis,
+                                                name='p_l')
+                row += f"{player_lower_emoji}"
+            elif world.does_user_upper_part_exist_at_pos(x, y):
+                player_lower_emoji = discord.utils.get(interaction.client.get_guild(570999180021989377).emojis,
+                                                name='p_u')
+                row += f"{player_lower_emoji}"
+            else:
+                block = world.get_block(x, y)
+                block_emoji = discord.utils.get(interaction.client.get_guild(570999180021989377).emojis,
+                                                name=block.get_emoji())
+                row += f"{block_emoji}"
 
-            row += f"{block_emoji}"
 
         blocks_str += row + "\n"
 
@@ -104,14 +122,11 @@ class WorldSelect(discord.ui.Select):
         user = db.get_user_in_world(idUser=interaction.user.id, idWorld=selected_idWorld)
 
         await render_world(user=user, world=world, interaction=interaction)
-
-
 class WorldSelectionView(discord.ui.View):
     def __init__(self, idUser):
         super().__init__()
 
         self.add_item(WorldSelect(idUser=idUser))
-
 class PlayCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client

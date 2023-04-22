@@ -10,7 +10,7 @@ class World:
         self.name = res[2]
         self.world_size = WorldSize(res[3])
         self.blocks = db.get_world_blocks(idWorld=res[0])
-
+        self.users = db.get_all_users_in_world(idWorld=res[0])
     def get_name(self):
         return self.name
 
@@ -43,3 +43,22 @@ class World:
                 return block
 
         return None
+
+    def does_user_lower_part_exist_at_pos(self, x, y):
+        for user in self.users:
+            if user.x == x and user.y == y:
+                return True
+
+        return False
+
+    def does_user_upper_part_exist_at_pos(self, x, y):
+        for user in self.users:
+            if user.x == x and user.y - 1 == y:
+                return True
+
+        return False
+
+    def update_world(self):
+        res = db.get_world(idWorld=self.id)
+        self.blocks = db.get_world_blocks(idWorld=res[0])
+        self.users = db.get_all_users_in_world(idWorld=res[0])

@@ -36,11 +36,7 @@ def add_world(idUser, world_name, world_size):
     cursor.execute(sql)
     idWorld = str(cursor.fetchone()).strip("(,)")
 
-    sql = f"INSERT INTO worlds_has_users VALUE(NULL, {idWorld}, {idUser}, {world_size.get_x() / 2}, {world_size.get_y() / 2});"
-    cursor.execute(sql)
-    mydb.commit()
-
-    print("Added new world")
+    print("Added new world..")
     return idWorld
 
 def get_world_size(idSize):
@@ -133,3 +129,36 @@ def update_user_position(idUser, idWorld, new_x, new_y):
         sql = f"UPDATE worlds_has_users SET y = y + {new_y} WHERE idUser = {idUser} AND idWorld = {idWorld};"
         cursor.execute(sql)
         mydb.commit()
+
+
+def delete_all_worlds():
+    sql = f"DELETE FROM worlds_has_users;"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"DELETE FROM worlds_has_blocks;"
+    cursor.execute(sql)
+    mydb.commit()
+
+    sql = f"DELETE FROM worlds;"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def add_user_to_world(idWorld, idUser, x, y):
+    sql = f"INSERT INTO worlds_has_users VALUE(NULL, {idWorld}, {idUser}, {x}, {y});"
+    cursor.execute(sql)
+    mydb.commit()
+
+
+def get_all_users_in_world(idWorld):
+    users = []
+    sql = f"SELECT idUser, x, y FROM worlds_has_users WHERE idWorld = {idWorld};"
+    cursor.execute(sql)
+    res = cursor.fetchall()
+    if res:
+        for row in res:
+            users.append(User(row[0], row[1], row[2]))
+
+        return users
+    return None

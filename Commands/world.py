@@ -9,11 +9,10 @@ from Classes.world import World
 from discord.ext import commands
 import db
 
-SURFACE_HEIGHT_MAX = 3
+SURFACE_HEIGHT_MAX = 4
 TREE_HEIGHT = 3
-TREE_CHANCE = 0.10
-GRASS_CHANCE = 0.50
-CAVE_THRESHOLD = 0.5
+TREE_CHANCE = 0.20
+GRASS_CHANCE = 0.65
 
 class WorldCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -31,8 +30,7 @@ class WorldCommand(commands.Cog):
 
         idWorld = db.add_world(idUser=interaction.user.id, world_name=selected_world_name, world_size=selected_world_size)
         world = World(id=idWorld)
-
-        random.seed(idWorld)  # use world ID as seed
+        random.seed(str(idWorld))  # use world ID as seed
 
         embed = discord.Embed(title=f"World Generation",
                               description=f"Currently generating a **{selected_world_size.get_name()}** sized world named `{selected_world_name}`...\n"
@@ -44,11 +42,12 @@ class WorldCommand(commands.Cog):
         noise_world = []
         for x in range(world.get_world_size().get_x()):
             for y in range(world.get_world_size().get_y()):
-                random.seed((idWorld, x, y))  # use world ID, x, and y as seed
+                random.seed(str(idWorld) + str(x) + str(y))  # use world ID, x, and y as seed
                 noise_value = random.uniform(-1, 1)
                 scaled_value = (noise_value + 1) / 2  # scale to range of 0 to 1
                 noise_world.append([scaled_value] * world.get_world_size().get_y())
 
+        print("Generating world..")
         for x in range(world.get_world_size().get_x()):
             for y in range(world.get_world_size().get_y()):
                 surface_level = world.get_world_size().get_y() // 2  # surface at the middle of the map
@@ -78,6 +77,7 @@ class WorldCommand(commands.Cog):
                         world.add_block(Block(3), x, y)
 
         # add grass
+        print("Generating grass..")
         for block in world.get_blocks():
             if block.get_id() == 2: # if it's grass
                 if random.uniform(0, 1) > GRASS_CHANCE:
@@ -89,6 +89,7 @@ class WorldCommand(commands.Cog):
                         world.add_block(block=Block(6), x=block.get_x_pos(), y=block.get_y_pos() - 1)
 
         # add trees
+        print("Generating trees..")
         for block in world.get_blocks():
             if block.get_id() == 2:  # if it's grass
                 if world.get_block(block.get_x_pos() + 1, block.get_y_pos() - 2):
@@ -107,12 +108,23 @@ class WorldCommand(commands.Cog):
                 if random.uniform(0, 1) < TREE_CHANCE:
                     # spawn a tree
                     generate_tree(world=world, block=block, height=TREE_HEIGHT)
-        print(f"Done!")
+
+        # Find valid spawn position
+        for block in world.get_blocks():
+            if block.get_id() == 2:
+                # is first block free?
+                if world.get_block(block.get_x_pos(), block.get_y_pos() - 1):
+                    if world.get_block(block.get_x_pos(), block.get_y_pos() - 1).get_id() == 1:
+                        # is second block also free?
+                        if world.get_block(block.get_x_pos(), block.get_y_pos() - 2):
+                            if world.get_block(block.get_x_pos(), block.get_y_pos() - 2).get_id() == 1:
+                                # found valid spawn position!
+                                db.add_user_to_world(idWorld=idWorld, idUser=interaction.user.id,x=block.get_x_pos(), y=block.get_y_pos() - 1)
+                                break
+
+        print("Finished generating!")
 
 def generate_tree(world, block, height):
-    idWorld = world.get_id()
-    print("Placed a tree!")
-
     for i in range(1, height + 1):
         # add log blocks
         world.add_block(block=Block(9), x=block.get_x_pos(), y=block.get_y_pos() - i)
