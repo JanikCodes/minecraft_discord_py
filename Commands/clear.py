@@ -13,5 +13,7 @@ class ClearCommand(commands.Cog):
     async def clear(self, interaction: discord.Interaction):
         db.delete_all_worlds()
 
+        await interaction.response.send_message("Successfully cleared all worlds!", ephemeral=True, delete_after=2)
+
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(ClearCommand(client))

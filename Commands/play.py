@@ -29,10 +29,13 @@ class MoveButton(discord.ui.Button):
         await interaction.response.defer()
 
         # do we have a block at that location?
-        block = self.world.get_block(self.user.get_x_pos() + self.dir_x, self.user.get_y_pos() + self.dir_y)
-        if block:
-            if not block.get_is_solid():
-                db.update_user_position(idUser=self.user.get_id(), idWorld=self.world.get_id(), new_x=self.dir_x, new_y=self.dir_y)
+        lower_block = self.world.get_block(self.user.get_x_pos() + self.dir_x, self.user.get_y_pos() + self.dir_y)
+        if lower_block:
+            if not lower_block.get_is_solid():
+                upper_block = self.world.get_block(self.user.get_x_pos() + self.dir_x, self.user.get_y_pos() - 1 + self.dir_y)
+                if upper_block:
+                    if not upper_block.get_is_solid():
+                        db.update_user_position(idUser=self.user.get_id(), idWorld=self.world.get_id(), new_x=self.dir_x, new_y=self.dir_y)
             else:
                 print("Obstacle!")
         await render_world(user=self.user, world=self.world, interaction=interaction)

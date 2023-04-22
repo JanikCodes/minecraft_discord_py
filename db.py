@@ -119,12 +119,19 @@ def get_user_in_world(idUser, idWorld):
 
 
 def update_user_position(idUser, idWorld, new_x, new_y):
-    if new_x != 0:
+    if new_x != 0 and new_y != 0:
+        sql = f"UPDATE worlds_has_users SET x = x + {new_x} WHERE idUser = {idUser} AND idWorld = {idWorld};"
+        cursor.execute(sql)
+        mydb.commit()
+        sql = f"UPDATE worlds_has_users SET y = y + {new_y} WHERE idUser = {idUser} AND idWorld = {idWorld};"
+        cursor.execute(sql)
+        mydb.commit()
+    elif new_x != 0:
         # Move along X axis
         sql = f"UPDATE worlds_has_users SET x = x + {new_x} WHERE idUser = {idUser} AND idWorld = {idWorld};"
         cursor.execute(sql)
         mydb.commit()
-    else:
+    elif new_y != 0:
         # Move along Y axis
         sql = f"UPDATE worlds_has_users SET y = y + {new_y} WHERE idUser = {idUser} AND idWorld = {idWorld};"
         cursor.execute(sql)

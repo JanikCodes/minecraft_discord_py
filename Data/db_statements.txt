@@ -13,7 +13,7 @@ INSERT INTO blocks VALUE(3, "dirtblock", 1, 1, "bd");
 INSERT INTO blocks VALUE(4, "cleanstone", 1, 1, "bcs");
 INSERT into blocks VALUE(5, "grass01", 1, 0, "bgd1");
 INSERT into blocks VALUE(6, "grass02", 1, 0, "bgd2");
-INSERT into blocks VALUE(7, "glassblock", 1, 1, "bg");
+INSERT into blocks VALUE(7, "glassblock", 1, 0, "bg");
 INSERT into blocks VALUE(8, "coalblock", 1, 1, "bc");
 INSERT into blocks VALUE(9, "logblock", 1, 1, "bw");
 INSERT into blocks VALUE(10, "leafblock", 1, 1, "bl");
