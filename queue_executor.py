@@ -12,6 +12,10 @@ GRASS_CHANCE = 0.65
 
 WORLD_GENERATION_INTERVAL = 3
 
+# TODO
+# The core issue right now is that I have 2 threads which both use the same mysql connection, therefore resulting in async behavior
+# Solution: Make a seperate connection for the second thread and connect with that to the database, this requires a slight rework of my db.py
+
 class ExecuteWorldQueueGeneration(threading.Thread):
 
     gen_queue = []
