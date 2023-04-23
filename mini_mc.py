@@ -2,19 +2,20 @@ import logging
 import os
 import platform
 import time
-
 import discord
 from colorama import Back, Fore, Style
 from discord.ext import commands
-
 import config
 import db
+from queue_executor import ExecuteWorldQueueGeneration
 
 MY_GUILD = discord.Object(id=570999180021989377)
+
 
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='.', intents=discord.Intents().all())
+
     async def setup_hook(self):
         for fileName in os.listdir('./Commands'):
             if fileName.endswith('.py'):
@@ -29,8 +30,9 @@ class Client(commands.Bot):
         print(f"{prfx} Bot ID {Fore.YELLOW} {str(self.user.id)}")
         print(f"{prfx} Discord Version {Fore.YELLOW} {discord.__version__}")
         print(f"{prfx} Python Version {Fore.YELLOW} {str(platform.python_version())}")
-        print(f"{prfx} Bot Version 0.1")
         await db.init_database()
+
+        ExecuteWorldQueueGeneration().start()
 
         logging.warning("Now logging..")
 
