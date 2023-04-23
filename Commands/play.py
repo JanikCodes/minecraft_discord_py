@@ -102,7 +102,6 @@ class MoveButton(discord.ui.Button):
 
 
         await render_world(user=self.user, world=self.world, interaction=interaction)
-
 class WorldGameView(discord.ui.View):
     def __init__(self, user, world):
         super().__init__()
@@ -119,7 +118,6 @@ class WorldGameView(discord.ui.View):
         self.add_item(HandButton(hand_mode=hand_mode, user=user, world=world, x=-1, y=1, row=3)) #bottom-left
         self.add_item(MoveButton(label="Down", user=user, dir_x=0, dir_y=1, world=world, row=3))
         self.add_item(HandButton(hand_mode=hand_mode, user=user, world=world, x=1, y=1, row=3)) #bottom-right
-
 async def render_world(user, world, interaction):
     world.update_world()
     user.update_user(world=world)
@@ -211,6 +209,5 @@ class PlayCommand(commands.Cog):
             await interaction.response.send_message(embed=embed)
         else:
             await interaction.response.send_message(embed=embed, view=WorldSelectionView(idUser=interaction.user.id))
-
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(PlayCommand(client))
