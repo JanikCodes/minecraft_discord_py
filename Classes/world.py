@@ -3,12 +3,13 @@ from Classes.world_size import WorldSize
 import db
 
 class World:
-    def __init__(self, id):
+    def __init__(self, id, db):
         res = db.get_world(idWorld=id)
+        self.db = db
         self.id = res[0]
         self.owner = res[1]
         self.name = res[2]
-        self.world_size = WorldSize(res[3])
+        self.world_size = WorldSize(res[3], db)
         self.blocks = db.get_world_blocks(idWorld=res[0])
         self.users = db.get_all_users_in_world(idWorld=res[0])
     def get_name(self):
@@ -25,7 +26,7 @@ class World:
     def get_blocks(self):
         return self.blocks
 
-    def add_block(self, block, x, y):
+    def add_block(self, block, x, y, db):
         db.add_block_to_world(idWorld=self.id, idBlock=block.get_id(), x=x, y=y)
 
         exist_block = self.get_block(x,y)
@@ -59,9 +60,9 @@ class World:
         return None
 
     def update_world(self):
-        res = db.get_world(idWorld=self.id)
-        self.blocks = db.get_world_blocks(idWorld=res[0])
-        self.users = db.get_all_users_in_world(idWorld=res[0])
+        res = self.db.get_world(idWorld=self.id)
+        self.blocks = self.db.get_world_blocks(idWorld=res[0])
+        self.users = self.db.get_all_users_in_world(idWorld=res[0])
 
     def find_valid_spawn_position(self):
         for block in self.blocks:

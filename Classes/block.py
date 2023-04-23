@@ -2,7 +2,7 @@ import db
 
 
 class Block:
-    def __init__(self, id):
+    def __init__(self, id, db):
         res = db.get_block(idBlock=id)
         self.id = res[0]
         self.name = res[1]

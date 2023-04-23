@@ -40,6 +40,7 @@ class InviteView(discord.ui.View):
 class InviteCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
+        self.db = client.database
 
     @app_commands.command(name="invite", description="Invite a player to your mini world!")
     async def invite(self, interaction: discord.Interaction, user: discord.Member):
@@ -48,7 +49,7 @@ class InviteCommand(commands.Cog):
                               description=f"Please select one of your worlds..")
 
         # does user have at least one world?
-        if db.get_world_count_from_user(idUser=interaction.user.id, own_worlds_only=True) == 0:
+        if self.db.get_world_count_from_user(idUser=interaction.user.id, own_worlds_only=True) == 0:
             embed.colour = discord.Color.red()
             embed.set_footer(text="You don't have any world ready right now!")
             await interaction.response.send_message(embed=embed)

@@ -1,9 +1,8 @@
 import threading
 import time
 import random
-import discord
 from Classes.block import Block
-import db
+from db import Database
 
 SURFACE_HEIGHT_MAX = 4
 TREE_HEIGHT = 3
@@ -17,6 +16,8 @@ WORLD_GENERATION_INTERVAL = 3
 # Solution: Make a seperate connection for the second thread and connect with that to the database, this requires a slight rework of my db.py
 
 class ExecuteWorldQueueGeneration(threading.Thread):
+
+    database = Database()
 
     gen_queue = []
     @classmethod
@@ -58,36 +59,28 @@ class ExecuteWorldQueueGeneration(threading.Thread):
                     (noise_value - 0.80) * SURFACE_HEIGHT_MAX)  # adjust surface level based on noise value
 
                 if y <= surface_level:  # air
-                    db.add_block_to_world(idWorld=idWorld, idBlock=1, x=x, y=y)
-                    world.add_block(Block(1), x, y)
+                    world.add_block(Block(1, db=self.database), x, y, db=self.database)
                 elif y == surface_level + 1:  # grass
-                    db.add_block_to_world(idWorld=idWorld, idBlock=2, x=x, y=y)
-                    world.add_block(Block(2), x, y)
+                    world.add_block(Block(2, db=self.database), x, y, db=self.database)
                 elif y <= surface_level + 3:  # dir
-                    db.add_block_to_world(idWorld=idWorld, idBlock=3, x=x, y=y)
-                    world.add_block(Block(3), x, y)
+                    world.add_block(Block(3, db=self.database), x, y, db=self.database)
                 else:  # stone
                     scaled_value = (noise_world[x][y] + 1) / 2  # scale to range of 0 to 1
                     if scaled_value > 0.25:  # more stone than dirt
                         if random.random() < 0.05:  # 5% chance of placing a coal block
-                            db.add_block_to_world(idWorld=idWorld, idBlock=8, x=x, y=y)  # coal block
-                            world.add_block(Block(8), x, y)
+                            world.add_block(Block(8, db=self.database), x, y, db=self.database)
                         else:
-                            db.add_block_to_world(idWorld=idWorld, idBlock=4, x=x, y=y)  # stone block
-                            world.add_block(Block(4), x, y)
+                            world.add_block(Block(4, db=self.database), x, y, db=self.database)
                     else:  # more dirt than stone
-                        db.add_block_to_world(idWorld=idWorld, idBlock=3, x=x, y=y)
-                        world.add_block(Block(3), x, y)
+                        world.add_block(Block(3, db=self.database), x, y, db=self.database)
 
         for block in world.get_blocks():
             if block.get_id() == 2:  # if it's grass
                 if random.uniform(0, 1) > GRASS_CHANCE:
                     if random.uniform(0, 1) > 0.5:
-                        db.add_block_to_world(idWorld=idWorld, idBlock=5, x=block.get_x_pos(), y=block.get_y_pos() - 1)
-                        world.add_block(block=Block(5), x=block.get_x_pos(), y=block.get_y_pos() - 1)
+                        world.add_block(block=Block(5, db=self.database), x=block.get_x_pos(), y=block.get_y_pos() - 1, db=self.database)
                     else:
-                        db.add_block_to_world(idWorld=idWorld, idBlock=6, x=block.get_x_pos(), y=block.get_y_pos() - 1)
-                        world.add_block(block=Block(6), x=block.get_x_pos(), y=block.get_y_pos() - 1)
+                        world.add_block(block=Block(6, db=self.database), x=block.get_x_pos(), y=block.get_y_pos() - 1, db=self.database)
 
         # add trees
         print("Generating trees..")
@@ -108,34 +101,34 @@ class ExecuteWorldQueueGeneration(threading.Thread):
 
                 if random.uniform(0, 1) < TREE_CHANCE:
                     # spawn a tree
-                    generate_tree(world=world, block=block, height=TREE_HEIGHT)
+                    generate_tree(world=world, block=block, height=TREE_HEIGHT, db=self.database)
 
         spawn_x, spawn_y = world.find_valid_spawn_position()
 
-        db.add_user_to_world(idWorld=world.get_id(), idUser=idUser, x=spawn_x, y=spawn_y)
+        self.database.add_user_to_world(idWorld=world.get_id(), idUser=idUser, x=spawn_x, y=spawn_y)
         print("Finished generating!")
 
 
-def generate_tree(world, block, height):
+def generate_tree(world, block, height, db):
     for i in range(1, height + 1):
         # add log blocks
-        world.add_block(block=Block(9), x=block.get_x_pos(), y=block.get_y_pos() - i)
+        world.add_block(block=Block(9, db=db), x=block.get_x_pos(), y=block.get_y_pos() - i, db=db)
 
     # add leaves
-    world.add_block(block=Block(10), x=block.get_x_pos() - 1, y=block.get_y_pos() - height)
-    world.add_block(block=Block(10), x=block.get_x_pos(), y=block.get_y_pos() - height)
-    world.add_block(block=Block(10), x=block.get_x_pos() + 1, y=block.get_y_pos() - height)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos() - 1, y=block.get_y_pos() - height, db=db)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos(), y=block.get_y_pos() - height, db=db)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos() + 1, y=block.get_y_pos() - height, db=db)
 
-    world.add_block(block=Block(10), x=block.get_x_pos() - 2, y=block.get_y_pos() - height)
-    world.add_block(block=Block(10), x=block.get_x_pos() + 2, y=block.get_y_pos() - height)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos() - 2, y=block.get_y_pos() - height, db=db)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos() + 2, y=block.get_y_pos() - height, db=db)
 
-    world.add_block(block=Block(10), x=block.get_x_pos() - 1, y=block.get_y_pos() - height - 1)
-    world.add_block(block=Block(10), x=block.get_x_pos(), y=block.get_y_pos() - height - 1)
-    world.add_block(block=Block(10), x=block.get_x_pos() + 1, y=block.get_y_pos() - height - 1)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos() - 1, y=block.get_y_pos() - height - 1, db=db)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos(), y=block.get_y_pos() - height - 1, db=db)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos() + 1, y=block.get_y_pos() - height - 1, db=db)
 
-    world.add_block(block=Block(10), x=block.get_x_pos() - 2, y=block.get_y_pos() - height - 1)
-    world.add_block(block=Block(10), x=block.get_x_pos() + 2, y=block.get_y_pos() - height - 1)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos() - 2, y=block.get_y_pos() - height - 1, db=db)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos() + 2, y=block.get_y_pos() - height - 1, db=db)
 
-    world.add_block(block=Block(10), x=block.get_x_pos() - 1, y=block.get_y_pos() - height - 2)
-    world.add_block(block=Block(10), x=block.get_x_pos(), y=block.get_y_pos() - height - 2)
-    world.add_block(block=Block(10), x=block.get_x_pos() + 1, y=block.get_y_pos() - height - 2)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos() - 1, y=block.get_y_pos() - height - 2, db=db)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos(), y=block.get_y_pos() - height - 2, db=db)
+    world.add_block(block=Block(10, db=db), x=block.get_x_pos() + 1, y=block.get_y_pos() - height - 2, db=db)

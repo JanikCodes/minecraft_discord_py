@@ -19,6 +19,7 @@ class InviteView(discord.ui.View):
 class BotCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
+        self.db = client.database
 
     @app_commands.command(name="bot", description="Invite this bot to your server!")
     async def bot(self, interaction: discord.Interaction):

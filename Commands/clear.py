@@ -4,14 +4,14 @@ from discord.ext import commands
 
 import db
 
-
 class ClearCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
+        self.db = client.database
 
     @app_commands.command(name="clear", description="Clear all worlds")
     async def clear(self, interaction: discord.Interaction):
-        db.delete_all_worlds()
+        self.db.delete_all_worlds()
 
         await interaction.response.send_message("Successfully cleared all worlds!", ephemeral=True, delete_after=2)
 

@@ -28,7 +28,7 @@ class User:
     def get_hand_mode(self):
         return self.hand_mode
 
-    def update_user(self, world):
+    def update_user(self, world, db):
         user = db.get_user_in_world(idUser=self.id, idWorld=world.get_id())
         self.x = user.get_x_pos()
         self.y = user.get_y_pos()
