@@ -19,7 +19,16 @@ Each `world` kind of acts like a server, so once you invite a friend to play in 
 - [x] Network replication
 - [x] Break blocks
 - [x] Place blocks
+- [ ] Different blocks to build with
+- [ ] Improve player controls
 - [ ] Player and block physics
+
+## Potential features
+- [ ] Nether dimension
+- [ ] Health and damage
+- [ ] AI ( animals, hostile, . . )
+- [ ] Interaction blocks ( wooden sign, bed, . . )
+
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [python]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
