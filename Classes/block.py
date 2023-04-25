@@ -1,6 +1,3 @@
-import db
-
-
 class Block:
     def __init__(self, id, db):
         res = db.get_block(idBlock=id)

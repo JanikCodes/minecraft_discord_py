@@ -1,5 +1,3 @@
-import db
-
 class WorldSize:
     def __init__(self, id, db):
         res = db.get_world_size(idSize=id)

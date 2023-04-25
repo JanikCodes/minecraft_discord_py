@@ -1,6 +1,5 @@
-from Classes.block import Block
 from Classes.world_size import WorldSize
-import db
+
 
 class World:
     def __init__(self, id, db):

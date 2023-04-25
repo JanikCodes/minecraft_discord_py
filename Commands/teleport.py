@@ -1,7 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-import db
+
 
 class TeleportCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
