@@ -160,7 +160,7 @@ async def render_world(user, world, interaction, db):
 
     message = interaction.message
     edited_embed = message.embeds[0]
-    edited_embed.title = ""
+    edited_embed.title = f"World: {world.get_name()}"
     edited_embed.description = blocks_str
 
     edited_embed.set_footer(text="")
@@ -205,6 +205,8 @@ class PlayCommand(commands.Cog):
 
     @app_commands.command(name="play", description="Start your minecraft adventure!")
     async def play(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
         embed = discord.Embed(title=f"World Selection",
                               description=f"Please select a world to play on.")
 
@@ -212,8 +214,8 @@ class PlayCommand(commands.Cog):
         if self.db.get_world_count_from_user(idUser=interaction.user.id) == 0:
             embed.colour = discord.Color.red()
             embed.set_footer(text="You don't have any world ready right now! You can create one with /world")
-            await interaction.response.send_message(embed=embed)
+            await interaction.followup.send(embed=embed)
         else:
-            await interaction.response.send_message(embed=embed, view=WorldSelectionView(idUser=interaction.user.id, db=self.db))
+            await interaction.followup.send(embed=embed, view=WorldSelectionView(idUser=interaction.user.id, db=self.db))
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(PlayCommand(client))

@@ -154,9 +154,16 @@ class Database():
 
 
     def add_user_to_world(self, idWorld, idUser, x, y):
-        sql = f"INSERT INTO worlds_has_users VALUE(NULL, {idWorld}, {idUser}, {x}, {y}, 1, 'break');"
+        sql = f"SELECT idRel FROM worlds_has_users WHERE idWorld = {idWorld} AND idUser = {idUser};"
         self.cursor.execute(sql)
-        self.mydb.commit()
+        res =self.cursor.fetchone()
+        if not res:
+            sql = f"INSERT INTO worlds_has_users VALUE(NULL, {idWorld}, {idUser}, {x}, {y}, 1, 'break');"
+            self.cursor.execute(sql)
+            self.mydb.commit()
+            return True
+
+        return False
 
     def get_all_users_in_world(self, idWorld):
         users = []
