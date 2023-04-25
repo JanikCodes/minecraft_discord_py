@@ -5,6 +5,7 @@ from Classes.block import Block
 from Classes.user import User
 from Classes.world import World
 
+
 class Database():
     
     def __init__(self):

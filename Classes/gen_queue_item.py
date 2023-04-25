@@ -1,5 +1,3 @@
-import db
-
 class GenQueueItem:
     def __init__(self, world, idUser):
         self.world = world

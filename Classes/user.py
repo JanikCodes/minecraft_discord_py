@@ -1,7 +1,5 @@
 import discord
 
-import db
-
 RENDER_DISTANCE_X = 10
 RENDER_DISTANCE_Y = 6
 

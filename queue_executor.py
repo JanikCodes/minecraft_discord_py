@@ -1,13 +1,14 @@
+import random
 import threading
 import time
-import random
+
 from Classes.block import Block
 from db import Database
 
 SURFACE_HEIGHT_MAX = 4
 TREE_HEIGHT = 3
-TREE_CHANCE = 0.20
-GRASS_CHANCE = 0.65
+TREE_CHANCE = 0.20 # chance for a tree to spawn under certain circumstances
+GRASS_CHANCE = 0.65 # chance for grass to appear above a grass block
 
 WORLD_GENERATION_INTERVAL = 3
 
