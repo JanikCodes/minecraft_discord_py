@@ -4,7 +4,7 @@ Each `world` kind of acts like a server, so once you invite a friend to play in 
 
 The world generation uses a custom build `queue system` that is running `on a different thread` to not harm the bot performance under pressure and allow for giant worlds to be generated without running into a timeout.
 
-![image](https://user-images.githubusercontent.com/72082960/233780883-53c56b85-ba5f-479e-be31-34c2af6273de.png)
+![image](https://user-images.githubusercontent.com/72082960/234576675-9e3f01aa-c6c6-4fb3-8918-e17fa2fe9b53.png)
 
 ## Contribute
 This is an **open source** project and was designed so people can expand the minimc.
