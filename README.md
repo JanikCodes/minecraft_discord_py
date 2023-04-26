@@ -19,7 +19,8 @@ Feel free to Fork & post PR's
 
 ## Features
 - [x] World generation
-- [X] Dynamic tree & decoration generation
+- [x] Dynamic tree & decoration generation
+- [x] Cave generation
 - [x] 2 block high player model
 - [x] Player animations
 - [x] Server creation
@@ -27,7 +28,7 @@ Feel free to Fork & post PR's
 - [x] Network replication
 - [x] Break blocks
 - [x] Place blocks
-- [ ] Different blocks to build with
+- [ ] Different blocks to build
 - [ ] Improve player controls
 - [ ] Player and block physics
 
