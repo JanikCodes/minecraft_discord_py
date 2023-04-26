@@ -2,7 +2,15 @@
 This project is a mini version of minecraft/terraria featuring a `procedural generated world` with the ability to invite friends to play in your world.
 Each `world` kind of acts like a server, so once you invite a friend to play in your `world` they can modify it and move around even while you're offline.
 
+The world generation uses a custom build `queue system` that is running `on a different thread` to not harm the bot performance under pressure.
+
 ![image](https://user-images.githubusercontent.com/72082960/233780883-53c56b85-ba5f-479e-be31-34c2af6273de.png)
+
+## Contribute
+This is an **open source** project and was designed so people can expand the minimc.
+
+[Below](#potential-features) you can find certain features that would be cool to implement.
+Feel free to Fork & post PR's
 
 ### Built With
 [![Python][python]][python-url]
@@ -28,6 +36,7 @@ Each `world` kind of acts like a server, so once you invite a friend to play in 
 - [ ] Health and damage
 - [ ] AI ( animals, hostile, . . )
 - [ ] Interaction blocks ( wooden sign, bed, . . )
+- [ ] Custom skins ( Cmd to save an emoji from guild ID to db and read from that )
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
