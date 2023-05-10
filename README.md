@@ -20,6 +20,7 @@ Feel free to Fork & post PR's
 
 ## Features
 - [x] World generation
+- [x] Collisions
 - [x] Dynamic tree & decoration generation
 - [x] Cave generation
 - [x] 2 block high player model
