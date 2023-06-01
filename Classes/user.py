@@ -33,11 +33,11 @@ class User:
         self.direction = user.get_direction()
         self.hand_mode = user.get_hand_mode()
 
-    def get_upper_body_emoji(self, interaction):
+    def get_upper_body_emoji(self, interaction, y):
         if self.direction == 1:
             return discord.utils.get(interaction.client.get_guild(570999180021989377).emojis, name='p_u_r')
         elif self.direction == -1:
             return discord.utils.get(interaction.client.get_guild(570999180021989377).emojis, name='p_u_l')
 
-    def get_lower_body_emoji(self, interaction):
+    def get_lower_body_emoji(self, interaction, y):
         return discord.utils.get(interaction.client.get_guild(570999180021989377).emojis, name='p_l_r')

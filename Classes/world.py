@@ -1,5 +1,7 @@
+from Classes.block import Block
 from Classes.world_size import WorldSize
 
+CAVE_BACKGROUND_HEIGHT = 20
 
 class World:
     def __init__(self, id, db):
@@ -37,9 +39,14 @@ class World:
             block.set_y_pos(y)
             self.blocks.append(block)
 
-    def get_block(self, x, y):
+    def get_block(self, x, y, db: None):
         for block in self.blocks:
             if block.get_x_pos() == x and block.get_y_pos() == y:
+                if db:
+                    if block.get_id() == 1 and block.get_y_pos() >= CAVE_BACKGROUND_HEIGHT:
+                        # return a cave background block
+                        return Block(id=11, db=db)
+
                 return block
 
         return None

@@ -146,11 +146,11 @@ async def render_world(user, world, interaction, db):
             upper_body_user = world.does_user_upper_part_exist_at_pos(x, y)
 
             if lower_body_user:
-                row += f"{lower_body_user.get_lower_body_emoji(interaction=interaction)}"
+                row += f"{lower_body_user.get_lower_body_emoji(interaction=interaction, y=y)}"
             elif upper_body_user:
-                row += f"{upper_body_user.get_upper_body_emoji(interaction=interaction)}"
+                row += f"{upper_body_user.get_upper_body_emoji(interaction=interaction, y=y)}"
             else:
-                block = world.get_block(x, y)
+                block = world.get_block(x, y, db)
                 block_emoji = discord.utils.get(interaction.client.get_guild(570999180021989377).emojis,
                                                 name=block.get_emoji())
                 row += f"{block_emoji}"
