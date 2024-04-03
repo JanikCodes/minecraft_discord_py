@@ -1,7 +1,9 @@
 ## Minimc
 - -
 ## How to contribute
-- - 
+1. Modify the `your.env` with your required credentials. 
+2. Coming soon
+
 - - - - -
 ## Feature list
 - Player movement & rendering
