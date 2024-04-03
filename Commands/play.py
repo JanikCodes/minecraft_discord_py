@@ -15,12 +15,19 @@ class PlayCommand(commands.Cog):
     @app_commands.command(name="play", description="Start your adventure!")
     async def playCommand(self, interaction: discord.Interaction):
         await interaction.response.defer()
+        user_id = interaction.user.id
 
         embed = discord.Embed(title=f"World Selection",
                               description=f"Please select a world to play on.")
 
-        # TODO: does user have at least one world?
-        await interaction.followup.send(embed=embed, view=WorldSelectionView(user_id=interaction.user.id))
+        # get player worlds
+        worlds = session.query(World).join(World.users).filter(WorldHasUsers.user_id == user_id).all()
+        if not worlds:
+            embed.colour = discord.Color.red()
+            embed.set_footer(text="You don't have any world ready right now! You can create one with /generate")
+            await interaction.followup.send(embed=embed)
+        else:
+            await interaction.followup.send(embed=embed, view=WorldSelectionView(user_id=user_id))
 
 
 async def setup(client: commands.Bot) -> None:
