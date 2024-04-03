@@ -6,7 +6,7 @@ from discord import app_commands
 from discord.ext import commands
 from sqlalchemy import insert
 from Classes import WorldHasBlocks, World, WorldHasUsers, Block
-from Fixtures.BlockFixture import dirt, stone, coal, iron, gold, diamond, stone_darken, grass, air
+from Fixtures.BlockFixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air
 from session import session
 
 world_width = 60
@@ -132,7 +132,7 @@ def gen_caves(blocks):
         for y in range(world_height):
             if y > cave_biome_max_y:
                 if random.random() < cave_density:
-                    paint_in_sphere(blocks, x, y, cave_min_radius, cave_max_radius, stone_darken.id)
+                    paint_in_sphere(blocks, x, y, cave_min_radius, cave_max_radius, stone_background.id)
 
 def gen_surface(blocks):
     frequencies = [random.uniform(0.5, 2) for _ in range(surface_sin_wave_amount)]

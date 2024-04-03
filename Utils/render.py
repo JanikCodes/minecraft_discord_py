@@ -21,7 +21,7 @@ def calculate_view_range(center_x, center_y, view_range_width, view_range_height
     return start_x, end_x, start_y, end_y
 
 def query_block_data(world_id, start_x, end_x, start_y, end_y):
-    return session.query(WorldHasBlocks.x, WorldHasBlocks.y, Block) \
+    return session.query(WorldHasBlocks, Block) \
         .join(Block) \
         .filter(WorldHasBlocks.world_id == world_id) \
         .filter(WorldHasBlocks.x >= start_x, WorldHasBlocks.x < end_x) \
@@ -35,7 +35,7 @@ async def render_world(world_id, user_id, debug_save=False):
     block_data = query_block_data(world_id, start_x, end_x, start_y, end_y)
 
     # sort blocks by z axis
-    block_data.sort(key=lambda x: x[2].z)
+    block_data.sort(key=lambda x: x[1].z)
 
     light_map = propagate_light(block_data)
     world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y)
@@ -48,8 +48,8 @@ async def render_world(world_id, user_id, debug_save=False):
 def propagate_light(block_data):
     light_map = np.zeros((world_width, world_height), dtype=int)
 
-    for x, y, block in block_data:
-        light_map[x, y] = block.light_level
+    for block_rel, block in block_data:
+        light_map[block_rel.x, block_rel.y] = block.light_level
 
     for _ in range(10):
         for x in range(world_width):
@@ -63,19 +63,29 @@ def propagate_light(block_data):
 
     return light_map
 
+def get_block_sprite(block_rel, block):
+    for state in block.block_states:
+        if block_rel.state_active == state.state_active and block_rel.state_direction == state.state_direction:
+            return state.sprite
+
+    return 'error'
+
 def generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y):
     new_width = (end_x - start_x) * 16
     new_height = (end_y - start_y) * 16
     world_map = Image.new("RGBA", (new_width, new_height), color=sky_color)
 
-    for x, y, block in block_data:
-        light_level = light_map[x, y]
+    for block_rel, block in block_data:
+        light_level = light_map[block_rel.x, block_rel.y]
         brightness = int((light_level / 10) * 255)
-        block_image_path = os.path.join(block_images_folder, f"{block.image}.png")
-        block_image = Image.open(block_image_path).convert("RGBA")  # open block image in RGBA mode
+
+        sprite_image_name = get_block_sprite(block_rel, block)
+
+        sprite_image_path = os.path.join(block_images_folder, f"{sprite_image_name}.png")
+        block_sprite = Image.open(sprite_image_path).convert("RGBA")  # open block image in RGBA mode
 
         # convert block image to RGBA data
-        data = block_image.getdata()
+        data = block_sprite.getdata()
 
         # apply lighting only to non-transparent pixels
         new_data = []
@@ -89,9 +99,9 @@ def generate_world_map_with_lighting(light_map, block_data, start_x, start_y, en
             new_data.append(new_item)
 
         # update block image with new data
-        block_image.putdata(new_data)
+        block_sprite.putdata(new_data)
 
-        world_map.paste(block_image, ((x - start_x) * 16, (y - start_y) * 16),
-                        block_image)  # use block image as mask for transparency
+        world_map.paste(block_sprite, ((block_rel.x - start_x) * 16, (block_rel.y - start_y) * 16),
+                        block_sprite)  # use block image as mask for transparency
 
     return world_map

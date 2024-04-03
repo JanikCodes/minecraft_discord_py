@@ -54,7 +54,8 @@ class WorldHasUsers(Base):
             .where(WorldHasBlocks.id == self.upper_block_id) \
             .values({
                 WorldHasBlocks.x: WorldHasBlocks.x + dir_x,
-                WorldHasBlocks.y: WorldHasBlocks.y + dir_y
+                WorldHasBlocks.y: WorldHasBlocks.y + dir_y,
+                WorldHasBlocks.state_direction: dir_x
             })
         session.execute(update_player_upper_block)
         session.commit()
@@ -64,7 +65,8 @@ class WorldHasUsers(Base):
             .where(WorldHasBlocks.id == self.lower_block_id) \
             .values({
                 WorldHasBlocks.x: WorldHasBlocks.x + dir_x,
-                WorldHasBlocks.y: WorldHasBlocks.y + dir_y
+                WorldHasBlocks.y: WorldHasBlocks.y + dir_y,
+                WorldHasBlocks.state_direction: dir_x
             })
         session.execute(update_player_lower_block)
         session.commit()

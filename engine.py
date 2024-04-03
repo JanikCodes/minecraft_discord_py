@@ -17,4 +17,4 @@ engine = create_engine(f"mysql+mysqlconnector://{user}:{pwd}@{host}/{database}")
 base.Base.metadata.create_all(engine)
 
 # Import all data fixtures
-from Fixtures import BlockFixture
+from Fixtures import BlockFixture, BlockHasStatesFixture
