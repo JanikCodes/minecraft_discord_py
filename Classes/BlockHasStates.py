@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, ForeignKey, Boolean, String
 from sqlalchemy.orm import relationship
 from base import Base
 
+
 class BlockHasStates(Base):
     __tablename__ = "block_has_states"
 

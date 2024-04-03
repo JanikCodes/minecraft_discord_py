@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from base import Base
 
+
 class WorldHasBlocks(Base):
     __tablename__ = "world_has_blocks"
 

@@ -8,8 +8,9 @@ from session import session
 
 block_images_folder = "Blocks"
 sky_color = (115, 210, 229)
-view_range_width = 25 # 20
-view_range_height = 20 # 15
+view_range_width = 25  # 20
+view_range_height = 20  # 15
+
 
 def calculate_view_range(center_x, center_y, view_range_width, view_range_height):
     half_view_width = view_range_width // 2
@@ -20,6 +21,7 @@ def calculate_view_range(center_x, center_y, view_range_width, view_range_height
     end_y = min(world_height, center_y + half_view_height)
     return start_x, end_x, start_y, end_y
 
+
 def query_block_data(world_id, start_x, end_x, start_y, end_y):
     return session.query(WorldHasBlocks, Block) \
         .join(Block) \
@@ -28,8 +30,10 @@ def query_block_data(world_id, start_x, end_x, start_y, end_y):
         .filter(WorldHasBlocks.y >= start_y, WorldHasBlocks.y < end_y) \
         .all()
 
+
 async def render_world(world_id, user_id, debug_save=False):
-    user = session.query(WorldHasUsers).filter(and_(WorldHasUsers.user_id == user_id, WorldHasUsers.world_id == world_id)).first()
+    user = session.query(WorldHasUsers).filter(
+        and_(WorldHasUsers.user_id == user_id, WorldHasUsers.world_id == world_id)).first()
 
     start_x, end_x, start_y, end_y = calculate_view_range(user.x, user.y, view_range_width, view_range_height)
     block_data = query_block_data(world_id, start_x, end_x, start_y, end_y)
@@ -44,6 +48,7 @@ async def render_world(world_id, user_id, debug_save=False):
         world_map_with_lighting.save("WorldOutput/world_map.png")
 
     return world_map_with_lighting
+
 
 def propagate_light(block_data):
     light_map = np.zeros((world_width, world_height), dtype=int)
@@ -63,12 +68,14 @@ def propagate_light(block_data):
 
     return light_map
 
+
 def get_block_sprite(block_rel, block):
     for state in block.block_states:
         if block_rel.state_active == state.state_active and block_rel.state_direction == state.state_direction:
             return state.sprite
 
     return 'error'
+
 
 def generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y):
     new_width = (end_x - start_x) * 16

@@ -29,6 +29,7 @@ dirt_biome_density = 0.01
 dirt_biome_min_radius = 3
 dirt_biome_max_radius = 5
 
+
 class GenerateCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
@@ -54,7 +55,8 @@ class GenerateCommand(commands.Cog):
         session.commit()
 
         # add new user to db relation
-        user = WorldHasUsers(world_id=world_id, user_id=user_id, upper_block_id=upper_body_block.id, lower_block_id=lower_body_block.id, x=15, y=15, direction=1)
+        user = WorldHasUsers(world_id=world_id, user_id=user_id, upper_block_id=upper_body_block.id,
+                             lower_block_id=lower_body_block.id, x=15, y=15, direction=1)
         session.add(user)
         session.commit()
 
@@ -68,8 +70,10 @@ class GenerateCommand(commands.Cog):
 
         await interaction.followup.send(embed=embed)
 
+
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(GenerateCommand(client))
+
 
 def generate(world_id):
     blocks = {}
@@ -81,6 +85,7 @@ def generate(world_id):
     gen_surface(blocks)
     persist_blocks(blocks, world_id)
 
+
 def gen_terrain_base(blocks):
     for x in range(world_width):
         for y in range(world_height):
@@ -89,6 +94,7 @@ def gen_terrain_base(blocks):
             else:
                 blocks[(x, y)] = stone.id
 
+
 def gen_stone_biome(blocks):
     for x in range(world_width):
         for y in range(world_height):
@@ -96,12 +102,14 @@ def gen_stone_biome(blocks):
                 if random.random() < stone_biome_density:
                     paint_in_sphere(blocks, x, y, stone_biome_min_radius, stone_biome_max_radius, stone.id)
 
+
 def gen_dirt_biome(blocks):
     for x in range(world_width):
         for y in range(world_height):
             if y > dirt_biome_max_y:
                 if random.random() < dirt_biome_density:
                     paint_in_sphere(blocks, x, y, dirt_biome_min_radius, dirt_biome_max_radius, dirt.id)
+
 
 def gen_ores(blocks):
     coal_prob = np.interp(np.arange(world_height), [0, world_height], [0, 0.035])
@@ -127,12 +135,14 @@ def gen_ores(blocks):
             elif random.random() < diamond_chance:
                 blocks[(x, y)] = diamond.id
 
+
 def gen_caves(blocks):
     for x in range(world_width):
         for y in range(world_height):
             if y > cave_biome_max_y:
                 if random.random() < cave_density:
                     paint_in_sphere(blocks, x, y, cave_min_radius, cave_max_radius, stone_background.id)
+
 
 def gen_surface(blocks):
     frequencies = [random.uniform(0.5, 2) for _ in range(surface_sin_wave_amount)]
@@ -152,6 +162,7 @@ def gen_surface(blocks):
         for y in range(0, grass_y):
             blocks[(x, y)] = air.id
 
+
 def paint_in_sphere(blocks, x, y, min_radius, max_radius, block_id):
     cave_radius = random.uniform(min_radius, max_radius)
     # Mark blocks within the random radius as air.id
@@ -162,6 +173,7 @@ def paint_in_sphere(blocks, x, y, min_radius, max_radius, block_id):
                 distance = math.sqrt(dx ** 2 + dy ** 2)
                 if distance <= cave_radius:
                     blocks[(nx, ny)] = block_id
+
 
 def persist_blocks(blocks, world_id):
     for (x, y), block_id in blocks.items():

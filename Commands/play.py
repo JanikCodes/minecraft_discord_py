@@ -7,6 +7,7 @@ from Classes import WorldHasUsers
 from Utils.render import render_world
 from session import session
 
+
 class PlayCommand(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
@@ -21,14 +22,17 @@ class PlayCommand(commands.Cog):
         # TODO: does user have at least one world?
         await interaction.followup.send(embed=embed, view=WorldSelectionView(user_id=interaction.user.id))
 
+
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(PlayCommand(client))
+
 
 class WorldSelectionView(discord.ui.View):
     def __init__(self, user_id):
         super().__init__()
 
         self.add_item(WorldSelect(user_id=user_id))
+
 
 class WorldSelect(discord.ui.Select):
     def __init__(self, user_id):
@@ -65,16 +69,19 @@ async def render_world_handler(world, interaction):
     # attach the in-memory image file to the embed
     file = File(image_bytes, filename="world_map.png")
 
-    await interaction.response.edit_message(embed=new_embed, attachments=[file], view=WorldGameView(user_id=user_id, world=world))
+    await interaction.response.edit_message(embed=new_embed, attachments=[file],
+                                            view=WorldGameView(user_id=user_id, world=world))
+
 
 class WorldGameView(discord.ui.View):
     def __init__(self, user_id, world):
         super().__init__()
 
-        self.add_item(MoveButton(label="Up", user_id=user_id, dir_x=0, dir_y=-1, world=world, row=1,))
+        self.add_item(MoveButton(label="Up", user_id=user_id, dir_x=0, dir_y=-1, world=world, row=1, ))
         self.add_item(MoveButton(label="Left", user_id=user_id, dir_x=-1, dir_y=0, world=world, row=2))
         self.add_item(MoveButton(label="Right", user_id=user_id, dir_x=1, dir_y=0, world=world, row=2))
         self.add_item(MoveButton(label="Down", user_id=user_id, dir_x=0, dir_y=1, world=world, row=3))
+
 
 class MoveButton(discord.ui.Button):
     def __init__(self, label, user_id, dir_x, dir_y, world, row):

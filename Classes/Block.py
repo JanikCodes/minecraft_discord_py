@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
 from base import Base
 
+
 class Block(Base):
     __tablename__ = "block"
 

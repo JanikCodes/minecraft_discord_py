@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from Classes import WorldHasBlocks
 from base import Base
 
+
 class WorldHasUsers(Base):
     __tablename__ = "world_has_users"
 
@@ -49,17 +50,18 @@ class WorldHasUsers(Base):
             .where(WorldHasUsers.user_id == self.user_id) \
             .where(WorldHasUsers.world_id == self.world.id) \
             .values({
-                WorldHasUsers.x: WorldHasUsers.x + dir_x,
-                WorldHasUsers.y: WorldHasUsers.y + dir_y
-            })
+            WorldHasUsers.x: WorldHasUsers.x + dir_x,
+            WorldHasUsers.y: WorldHasUsers.y + dir_y
+        })
         session.execute(update_player_movement)
         session.commit()
 
+        # update player associated blocks
         update_player_blocks = update(WorldHasBlocks) \
             .where(WorldHasBlocks.id.in_([self.upper_block_id, self.lower_block_id])) \
             .values({
-                WorldHasBlocks.x: WorldHasBlocks.x + dir_x,
-                WorldHasBlocks.y: WorldHasBlocks.y + dir_y
-            })
+            WorldHasBlocks.x: WorldHasBlocks.x + dir_x,
+            WorldHasBlocks.y: WorldHasBlocks.y + dir_y
+        })
         session.execute(update_player_blocks)
         session.commit()
