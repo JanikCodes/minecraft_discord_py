@@ -4,8 +4,8 @@ import platform
 import discord
 from discord.ext import commands
 
-# import required engine
-import engine
+# import required files
+import database
 
 class Client(commands.Bot):
     def __init__(self):

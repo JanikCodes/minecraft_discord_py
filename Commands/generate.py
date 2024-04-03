@@ -40,6 +40,8 @@ class GenerateCommand(commands.Cog):
 
         user_id = interaction.user.id
 
+        # TODO: Make a limit to worlds a user can generate, ( max 3 worlds? )
+
         # add new world to db
         world = World(name=world_name, owner=user_id)
         session.add(world)

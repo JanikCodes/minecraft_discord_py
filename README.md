@@ -9,7 +9,7 @@ The game features various logic like handling **physics**, **tick rate**, **coll
 1. Modify the [your.env](your.env) with your required credentials. 
 2. Rename `your.env` to `.env`
 3. Create your database (example: [MySQL](https://www.mysql.com/de/)) with the correct name from [.env](your.env)
-4. Depending on your [DBMS](https://www.ibm.com/docs/en/zos-basic-skills?topic=zos-what-is-database-management-system) you maybe have to modify the [engine.py](engine.py) due to different connectors.
+4. Depending on your [DBMS](https://www.ibm.com/docs/en/zos-basic-skills?topic=zos-what-is-database-management-system) you maybe have to modify the [database.py](database.py) due to different connectors.
    ```py
     engine = create_engine(f"mysql+mysqlconnector://{user}:{pwd}@{host}/{database}")
     ```
