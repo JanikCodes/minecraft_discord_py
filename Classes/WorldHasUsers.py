@@ -28,14 +28,20 @@ class WorldHasUsers(Base):
         self.direction = direction
 
     def update_movement(self, session, dir_x, dir_y):
-        # update player facing direction
+        # update player facing direction & block_state uppon change
         if dir_x != 0:
             update_player_direction = update(WorldHasUsers) \
                 .where(WorldHasUsers.user_id == self.user_id) \
                 .where(WorldHasUsers.world_id == self.world.id) \
                 .values({WorldHasUsers.direction: dir_x})
-
             session.execute(update_player_direction)
+            session.commit()
+
+            # update state_direction in WorldHasBlocks
+            update_block_state_direction = update(WorldHasBlocks) \
+                .where(WorldHasBlocks.id.in_([self.upper_block_id, self.lower_block_id])) \
+                .values({WorldHasBlocks.state_direction: dir_x})
+            session.execute(update_block_state_direction)
             session.commit()
 
         # update player movement
@@ -49,24 +55,11 @@ class WorldHasUsers(Base):
         session.execute(update_player_movement)
         session.commit()
 
-        # update upper block
-        update_player_upper_block = update(WorldHasBlocks) \
-            .where(WorldHasBlocks.id == self.upper_block_id) \
+        update_player_blocks = update(WorldHasBlocks) \
+            .where(WorldHasBlocks.id.in_([self.upper_block_id, self.lower_block_id])) \
             .values({
                 WorldHasBlocks.x: WorldHasBlocks.x + dir_x,
-                WorldHasBlocks.y: WorldHasBlocks.y + dir_y,
-                WorldHasBlocks.state_direction: dir_x
+                WorldHasBlocks.y: WorldHasBlocks.y + dir_y
             })
-        session.execute(update_player_upper_block)
-        session.commit()
-
-        # update lower block
-        update_player_lower_block = update(WorldHasBlocks) \
-            .where(WorldHasBlocks.id == self.lower_block_id) \
-            .values({
-                WorldHasBlocks.x: WorldHasBlocks.x + dir_x,
-                WorldHasBlocks.y: WorldHasBlocks.y + dir_y,
-                WorldHasBlocks.state_direction: dir_x
-            })
-        session.execute(update_player_lower_block)
+        session.execute(update_player_blocks)
         session.commit()

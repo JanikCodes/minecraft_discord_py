@@ -29,16 +29,16 @@ session.merge(diamond_default)
 stone_background_default = BlockHasStates(id=9, block_id=stone_background.id, sprite="stone_background", state_active=0, state_direction=0)
 session.merge(stone_background_default)
 
-player_upper_right = BlockHasStates(id=10, block_id=player_upper.id, sprite="pumpkin_side", state_active=0, state_direction=1)
+player_upper_right = BlockHasStates(id=10, block_id=player_upper.id, sprite="player_upper_right", state_active=0, state_direction=1)
 session.merge(player_upper_right)
 
-player_upper_left = BlockHasStates(id=11, block_id=player_upper.id, sprite="sand", state_active=0, state_direction= -1)
+player_upper_left = BlockHasStates(id=11, block_id=player_upper.id, sprite="player_upper_left", state_active=0, state_direction= -1)
 session.merge(player_upper_left)
 
-player_lower_right = BlockHasStates(id=12, block_id=player_lower.id, sprite="pumpkin_side", state_active=0, state_direction=1)
+player_lower_right = BlockHasStates(id=12, block_id=player_lower.id, sprite="player_lower_default", state_active=0, state_direction=1)
 session.merge(player_lower_right)
 
-player_lower_left = BlockHasStates(id=13, block_id=player_lower.id, sprite="sand", state_active=0, state_direction= -1)
+player_lower_left = BlockHasStates(id=13, block_id=player_lower.id, sprite="player_lower_default", state_active=0, state_direction= -1)
 session.merge(player_lower_left)
 
 session.commit()
