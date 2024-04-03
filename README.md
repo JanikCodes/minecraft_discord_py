@@ -18,6 +18,7 @@ The game features various logic like handling **physics**, **tick rate**, **coll
 - - - - -
 ## Feature list
 - Player movement & rendering
+- Physics affecting `blocks` and `entities` (sand, gravel, player gravity)
 - World generation including ores, caves
 - Multiplayer synced movement, servers wtih invite functionality
 - 2D calculated lighting
@@ -29,4 +30,3 @@ The game features various logic like handling **physics**, **tick rate**, **coll
 - Redstone
 - AI `entities` ( chicken, cow, zombie, . . )
 - Structure generation
-- Physics affecting `blocks` and `entities`

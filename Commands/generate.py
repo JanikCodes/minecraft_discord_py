@@ -56,7 +56,7 @@ class GenerateCommand(commands.Cog):
 
         # add new user to db relation
         user = WorldHasUsers(world_id=world_id, user_id=user_id, upper_block_id=upper_body_block.id,
-                             lower_block_id=lower_body_block.id, x=15, y=15, direction=1)
+                             lower_block_id=lower_body_block.id)
         session.add(user)
         session.commit()
 

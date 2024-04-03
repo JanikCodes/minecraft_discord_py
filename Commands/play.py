@@ -85,7 +85,7 @@ class WorldGameView(discord.ui.View):
     def __init__(self, user_id, world):
         super().__init__()
 
-        self.add_item(MoveButton(label="Up", user_id=user_id, dir_x=0, dir_y=-1, world=world, row=1, ))
+        self.add_item(MoveButton(label="Up", user_id=user_id, dir_x=0, dir_y=-3, world=world, row=1, ))
         self.add_item(MoveButton(label="Left", user_id=user_id, dir_x=-1, dir_y=0, world=world, row=2))
         self.add_item(MoveButton(label="Right", user_id=user_id, dir_x=1, dir_y=0, world=world, row=2))
         self.add_item(MoveButton(label="Down", user_id=user_id, dir_x=0, dir_y=1, world=world, row=3))

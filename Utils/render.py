@@ -33,10 +33,14 @@ def query_block_data(world_id, start_x, end_x, start_y, end_y):
 
 
 async def render_world(world_id, user_id, debug_save=False):
-    user = session.query(WorldHasUsers).filter(
-        and_(WorldHasUsers.user_id == user_id, WorldHasUsers.world_id == world_id)).first()
+    # we use the player_lower block as the root for camera position & collision checks
+    user_root_block = session.query(WorldHasBlocks).join(WorldHasUsers, and_(
+        WorldHasUsers.world_id == world_id,
+        WorldHasUsers.user_id == user_id,
+        WorldHasBlocks.id == WorldHasUsers.lower_block_id
+    )).first()
 
-    start_x, end_x, start_y, end_y = calculate_view_range(user.x, user.y, view_range_width, view_range_height)
+    start_x, end_x, start_y, end_y = calculate_view_range(user_root_block.x, user_root_block.y, view_range_width, view_range_height)
     block_data = query_block_data(world_id, start_x, end_x, start_y, end_y)
 
     # sort blocks by z axis
