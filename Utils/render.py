@@ -8,8 +8,9 @@ from session import session
 
 block_images_folder = "Blocks"
 sky_color = (115, 210, 229)
-view_range_width = 25  # 20
-view_range_height = 20  # 15
+view_range_width = 25  # 25
+view_range_height = 15  # 20
+light_strength = 15
 
 
 def calculate_view_range(center_x, center_y, view_range_width, view_range_height):
@@ -56,7 +57,7 @@ def propagate_light(block_data):
     for block_rel, block in block_data:
         light_map[block_rel.x, block_rel.y] = block.light_level
 
-    for _ in range(10):
+    for _ in range(light_strength):
         for x in range(world_width):
             for y in range(world_height):
                 if light_map[x, y] > 0:
@@ -84,7 +85,22 @@ def generate_world_map_with_lighting(light_map, block_data, start_x, start_y, en
 
     for block_rel, block in block_data:
         light_level = light_map[block_rel.x, block_rel.y]
-        brightness = int((light_level / 10) * 255)
+
+        # Get neighboring light levels
+        neighbor_light_levels = []
+        for dx in range(-1, 2):
+            for dy in range(-1, 2):
+                nx, ny = block_rel.x + dx, block_rel.y + dy
+                if 0 <= nx < world_width and 0 <= ny < world_height:
+                    neighbor_light_levels.append(light_map[nx, ny])
+
+        # Calculate weighted average of current and neighboring light levels
+        total_light_levels = sum(neighbor_light_levels) + light_level
+        total_weights = len(neighbor_light_levels) + 1  # +1 to account for the current pixel
+        avg_light_level = total_light_levels / total_weights
+
+        # Calculate brightness based on the average light level
+        brightness = int((avg_light_level / light_strength) * 255)
 
         sprite_image_name = get_block_sprite(block_rel, block)
 

@@ -4,6 +4,7 @@ from discord import app_commands, File
 from discord.ext import commands
 from Classes import World
 from Classes import WorldHasUsers
+from Utils.physics import handle_physics
 from Utils.render import render_world
 from session import session
 
@@ -57,10 +58,10 @@ class WorldSelect(discord.ui.Select):
 
         world = session.query(World).filter(World.id == world_id).first()
 
-        await render_world_handler(world=world, interaction=interaction)
+        await HandleTick(world=world, interaction=interaction)
 
 
-async def render_world_handler(world, interaction):
+async def handle_rendering(world, interaction):
     user_id = interaction.user.id
 
     world_image = await render_world(world.id, user_id)
@@ -106,4 +107,10 @@ class MoveButton(discord.ui.Button):
         # update player movement, direction & associated blocks
         world_has_user.update_movement(session=session, dir_x=self.dir_x, dir_y=self.dir_y)
 
-        await render_world_handler(world=self.world, interaction=interaction)
+        await HandleTick(world=self.world, interaction=interaction)
+
+async def HandleTick(world, interaction):
+    # physics
+    await handle_physics(world=world)
+    # render
+    await handle_rendering(world=world, interaction=interaction)
