@@ -1,4 +1,6 @@
 ## Minimc
+![Test Image 3](Assets/banner.png)
+
 Minimc is a playable **MMO minecraft** 'clone' in Discord.
 <br>You can **generate unique worlds**, **invite your friends** to them and play together.
 
@@ -20,13 +22,13 @@ The game features various logic like handling **physics**, **tick rate**, **coll
 - Player movement & rendering
 - Placing / Destroying `blocks`
 - Physics affecting `blocks` and `entities` (sand, gravel, player gravity)
+- Structure generation ( Able to create your own presets and spawn them in, see [tree.py](tree.py) )
 - World generation including ores, caves
 - Multiplayer synced movement, servers wtih invite functionality
 - 2D calculated lighting
 - `Block` states with different rendering depending on the state
 - Z-Axis so `blocks` can be rendered in the background/foreground
 - - - - -
-## Planned
+## Ideas
 - Redstone
 - AI `entities` ( chicken, cow, zombie, . . )
-- Structure generation

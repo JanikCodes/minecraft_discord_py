@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, insert
+from sqlalchemy import create_engine
 import base
 
 load_dotenv()
@@ -16,5 +16,3 @@ database = os.getenv("database")
 engine = create_engine(f"mysql+mysqlconnector://{user}:{pwd}@{host}/{database}")
 base.Base.metadata.create_all(engine)
 
-# Import all data fixtures
-from Fixtures import BlockFixture, BlockHasStatesFixture

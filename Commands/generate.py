@@ -6,7 +6,8 @@ from discord import app_commands
 from discord.ext import commands
 from sqlalchemy import insert
 from Classes import WorldHasBlocks, World, WorldHasUsers, Block
-from Fixtures.BlockFixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air
+from Classes.Structures.tree import Tree
+from Fixtures.blockFixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air
 from session import session
 
 world_width = 60
@@ -14,6 +15,8 @@ world_height = 45
 
 surface_biome_max_y = 10
 surface_sin_wave_amount = 4
+
+tree_chance = 0.15
 
 cave_biome_max_y = 15
 cave_density = 0.01
@@ -85,8 +88,8 @@ def generate(world_id):
     gen_ores(blocks)
     gen_caves(blocks)
     gen_surface(blocks)
+    gen_trees(blocks)
     persist_blocks(blocks, world_id)
-
 
 def gen_terrain_base(blocks):
     for x in range(world_width):
@@ -165,11 +168,26 @@ def gen_surface(blocks):
         grass_y = round(wave_height)
         blocks[(x, grass_y, 1)] = grass.id
 
-        # Set blocks above grass to air
+
+        # Set blocks above grass to air, even background blocks
         for y in range(0, grass_y):
             blocks[(x, y, 1)] = air.id
+
+            # set background blocks to air
             blocks[(x, y, 0)] = air.id
 
+def gen_trees(blocks):
+    # based on tree_chance spawn a tree structure on top of a grass block
+    grass_positions = []
+
+    # loop through blocks to find grass positions
+    for (x, y, z), block_id in blocks.items():
+        if block_id == grass.id:
+            grass_positions.append((x, y, z))
+
+    for x, y, z in grass_positions:
+        if random.random() < tree_chance:
+            Tree().generate(x, y - 1, blocks)
 
 def paint_in_sphere(blocks, x, y, z, min_radius, max_radius, block_id):
     cave_radius = random.uniform(min_radius, max_radius)
