@@ -1,5 +1,7 @@
 from Classes import Block
 
+# add new blocks below. Each block requires atleast one blockHasStates entity to render.
+
 air = Block(1, name="Air", solid=False, gravity=False, light_level=10, z=0, debug_color="#0096FF")
 grass = Block(2, name="Grass", solid=True, gravity=False, light_level=0, z=1, debug_color="#32B32B")
 stone = Block(3, name="Stone", solid=True, gravity=False, light_level=0, z=1, debug_color="#828482")

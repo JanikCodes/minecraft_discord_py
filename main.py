@@ -10,6 +10,7 @@ from Commands.generate import generate
 from Utils.render import render_world_no_async
 from session import session
 
+# enabling this really helps with testing the world generation as it generates a new world upon start and renders it, storing it in /WorldOutput.
 draw_entire_world_only = False
 
 # import required files
