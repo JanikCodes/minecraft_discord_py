@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, ForeignKey, Boolean, update
 from sqlalchemy.orm import relationship
-from base import Base
 
+from Classes import Block
+from base import Base
 
 class WorldHasBlocks(Base):
     __tablename__ = "world_has_blocks"
@@ -25,3 +26,12 @@ class WorldHasBlocks(Base):
         self.block_id = block_id
         self.x = x
         self.y = y
+
+    def destroy_block_at_position(self, session,  x, y, block_id=1, z=1):
+        update_block_state_direction = update(WorldHasBlocks) \
+            .filter(WorldHasBlocks.world_id == self.world_id) \
+            .filter(WorldHasBlocks.x == x) \
+            .filter(WorldHasBlocks.y == y) \
+            .values({WorldHasBlocks.block_id: block_id})
+        session.execute(update_block_state_direction)
+        session.commit()

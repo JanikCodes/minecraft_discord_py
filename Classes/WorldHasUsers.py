@@ -13,7 +13,7 @@ class WorldHasUsers(Base):
     upper_block_id = Column("upper_block_id", Integer, ForeignKey('world_has_blocks.id'))
     lower_block_id = Column("lower_block_id", Integer, ForeignKey('world_has_blocks.id'))
 
-    # Define relationships
+    # define relationships
     world = relationship("World", back_populates="users")
 
     def __init__(self, world_id, user_id, upper_block_id, lower_block_id):
@@ -21,6 +21,25 @@ class WorldHasUsers(Base):
         self.user_id = user_id
         self.upper_block_id = upper_block_id
         self.lower_block_id = lower_block_id
+
+    def get_position(self, session):
+        # query WorldHasBlocks for the x and y values of the lower block
+        lower_block_position = session.query(WorldHasBlocks.x, WorldHasBlocks.y) \
+            .filter(WorldHasBlocks.id == self.lower_block_id) \
+            .first()
+
+        return lower_block_position
+
+    def get_direction(self, session):
+        # query WorldHasBlocks for facing direction
+        lower_block_direction = session.query(WorldHasBlocks.state_direction) \
+            .filter(WorldHasBlocks.id == self.lower_block_id) \
+            .first()
+
+        # because the query returns us a tuple e.g. "(-1, )" we need to convert it because we only want the raw int value
+        lower_block_direction = lower_block_direction[0] if lower_block_direction else None
+
+        return lower_block_direction
 
     def update_movement(self, session, dir_x, dir_y):
         # update player facing direction & block_state uppon change

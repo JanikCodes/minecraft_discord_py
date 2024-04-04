@@ -32,7 +32,7 @@ def query_block_data(world_id, start_x, end_x, start_y, end_y):
         .all()
 
 
-async def render_world(world_id, user_id, debug_save=False):
+async def render_world(world_id, user_id):
     # we use the player_lower block as the root for camera position & collision checks
     user_root_block = session.query(WorldHasBlocks).join(WorldHasUsers, and_(
         WorldHasUsers.world_id == world_id,
@@ -49,8 +49,7 @@ async def render_world(world_id, user_id, debug_save=False):
     light_map = propagate_light(block_data)
     world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y)
 
-    if debug_save:
-        world_map_with_lighting.save("WorldOutput/world_map.png")
+    # world_map_with_lighting.save("WorldOutput/world_map.png")
 
     return world_map_with_lighting
 
