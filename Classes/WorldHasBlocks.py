@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, ForeignKey, Boolean, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 
 from Classes import Block
@@ -28,10 +29,19 @@ class WorldHasBlocks(Base):
         self.y = y
 
     def destroy_block_at_position(self, session,  x, y, block_id=1, z=1):
-        update_block_state_direction = update(WorldHasBlocks) \
+        # query WorldHasBlocks to get all entities matching the world_id, x, and y
+        # this can return multiple entities based due to the z axis not taken into account yet
+        world_blocks_at_position = session.query(WorldHasBlocks) \
             .filter(WorldHasBlocks.world_id == self.world_id) \
             .filter(WorldHasBlocks.x == x) \
             .filter(WorldHasBlocks.y == y) \
-            .values({WorldHasBlocks.block_id: block_id})
-        session.execute(update_block_state_direction)
-        session.commit()
+            .all()
+
+        for world_block in world_blocks_at_position:
+            # check if the z value of the block matches the provided z
+            if world_block.block.z == z:
+                # delete the block rel
+                session.delete(world_block)
+                session.commit()
+                break
+

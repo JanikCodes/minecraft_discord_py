@@ -92,9 +92,14 @@ def gen_terrain_base(blocks):
     for x in range(world_width):
         for y in range(world_height):
             if y < dirt_biome_max_y:
-                blocks[(x, y)] = dirt.id
+                blocks[(x, y, 1)] = dirt.id
+
+                blocks[(x, y, 0)] = stone_background.id
             else:
-                blocks[(x, y)] = stone.id
+                blocks[(x, y, 1)] = stone.id
+
+                # place matching background for every stone
+                blocks[(x, y, 0)] = stone_background.id
 
 
 def gen_stone_biome(blocks):
@@ -102,7 +107,7 @@ def gen_stone_biome(blocks):
         for y in range(world_height):
             if y < dirt_biome_max_y:
                 if random.random() < stone_biome_density:
-                    paint_in_sphere(blocks, x, y, stone_biome_min_radius, stone_biome_max_radius, stone.id)
+                    paint_in_sphere(blocks, x, y, 1, stone_biome_min_radius, stone_biome_max_radius, stone.id)
 
 
 def gen_dirt_biome(blocks):
@@ -110,7 +115,7 @@ def gen_dirt_biome(blocks):
         for y in range(world_height):
             if y > dirt_biome_max_y:
                 if random.random() < dirt_biome_density:
-                    paint_in_sphere(blocks, x, y, dirt_biome_min_radius, dirt_biome_max_radius, dirt.id)
+                    paint_in_sphere(blocks, x, y, 1, dirt_biome_min_radius, dirt_biome_max_radius, dirt.id)
 
 
 def gen_ores(blocks):
@@ -129,13 +134,13 @@ def gen_ores(blocks):
 
             # Check if ore should be generated at this block
             if random.random() < coal_chance:
-                blocks[(x, y)] = coal.id
+                blocks[(x, y, 1)] = coal.id
             elif random.random() < iron_chance:
-                blocks[(x, y)] = iron.id
+                blocks[(x, y, 1)] = iron.id
             elif random.random() < gold_chance:
-                blocks[(x, y)] = gold.id
+                blocks[(x, y, 1)] = gold.id
             elif random.random() < diamond_chance:
-                blocks[(x, y)] = diamond.id
+                blocks[(x, y, 1)] = diamond.id
 
 
 def gen_caves(blocks):
@@ -143,7 +148,7 @@ def gen_caves(blocks):
         for y in range(world_height):
             if y > cave_biome_max_y:
                 if random.random() < cave_density:
-                    paint_in_sphere(blocks, x, y, cave_min_radius, cave_max_radius, stone_background.id)
+                    paint_in_sphere(blocks, x, y, 1, cave_min_radius, cave_max_radius, None)
 
 
 def gen_surface(blocks):
@@ -158,14 +163,15 @@ def gen_surface(blocks):
         ) + surface_biome_max_y
 
         grass_y = round(wave_height)
-        blocks[(x, grass_y)] = grass.id
+        blocks[(x, grass_y, 1)] = grass.id
 
         # Set blocks above grass to air
         for y in range(0, grass_y):
-            blocks[(x, y)] = air.id
+            blocks[(x, y, 1)] = air.id
+            blocks[(x, y, 0)] = air.id
 
 
-def paint_in_sphere(blocks, x, y, min_radius, max_radius, block_id):
+def paint_in_sphere(blocks, x, y, z, min_radius, max_radius, block_id):
     cave_radius = random.uniform(min_radius, max_radius)
     # Mark blocks within the random radius as air.id
     for dx in range(-int(cave_radius), int(cave_radius) + 1):
@@ -174,11 +180,16 @@ def paint_in_sphere(blocks, x, y, min_radius, max_radius, block_id):
             if 0 <= nx < world_width and 0 <= ny < world_height:
                 distance = math.sqrt(dx ** 2 + dy ** 2)
                 if distance <= cave_radius:
-                    blocks[(nx, ny)] = block_id
+                    if block_id is None:
+                        # Check if the key exists before deleting it
+                        if (nx, ny, z) in blocks:
+                            del blocks[(nx, ny, z)]
+                    else:
+                        blocks[(nx, ny, z)] = block_id
 
 
 def persist_blocks(blocks, world_id):
-    for (x, y), block_id in blocks.items():
+    for (x, y, z), block_id in blocks.items():
         stmt = insert(WorldHasBlocks).values(world_id=world_id, block_id=block_id, x=x, y=y)
         session.execute(stmt)
 
