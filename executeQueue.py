@@ -36,14 +36,6 @@ class ExecuteQueue(threading.Thread):
                 from Commands.generate import generate_no_async
                 generate_no_async(session=self.session, world_id=world.id)
 
-                non_solid_blocks = self.session.query(WorldHasBlocks.x, WorldHasBlocks.y) \
-                    .join(Block) \
-                    .filter(WorldHasBlocks.world_id == world.id) \
-                    .filter(Block.solid == False) \
-                    .all()
-
-                print(len(non_solid_blocks))
-
                 world.spawn_player(session=self.session, user_id=queue_item.user_id)
 
                 self.world_queue.remove(queue_item)
