@@ -5,10 +5,11 @@ import numpy as np
 from discord import app_commands
 from discord.ext import commands
 from sqlalchemy import insert
-from Classes import WorldHasBlocks, World, WorldHasUsers, Block
+from Classes import WorldHasBlocks, World
 from Classes.Structures.tree import Tree
+from Classes.queueWorld import QueueWorld
 from Fixtures.blockFixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air
-from session import session
+from executeQueue import ExecuteQueue
 
 world_width = 60
 world_height = 45
@@ -45,21 +46,12 @@ class GenerateCommand(commands.Cog):
 
         # TODO: Make a limit to worlds a user can generate, ( max 3 worlds? )
 
-        # add new world to db
-        world = World(name=world_name, owner=user_id)
-        session.add(world)
-        session.commit()
-        world_id = world.id
+        ExecuteQueue.add_to_queue(QueueWorld(world_name=world_name, user_id=user_id))
 
         embed = discord.Embed(title=f"World Generation",
                               description=f"Currently generating world `{world_name}`...\n"
                                           f"This can take a while...")
         embed.colour = discord.Color.red()
-
-        # start generate process
-        await generate(world_id)
-
-        world.spawn_player(session=session, user_id=user_id)
 
         await interaction.followup.send(embed=embed)
 
@@ -68,7 +60,7 @@ async def setup(client: commands.Bot) -> None:
     await client.add_cog(GenerateCommand(client))
 
 
-async def generate(world_id):
+async def generate(session, world_id):
     blocks = {}
     gen_terrain_base(blocks)
     gen_stone_biome(blocks)
@@ -77,9 +69,9 @@ async def generate(world_id):
     gen_caves(blocks)
     gen_surface(blocks)
     gen_trees(blocks)
-    persist_blocks(blocks, world_id)
+    persist_blocks(session, blocks, world_id)
 
-def generate_no_async(world_id):
+def generate_no_async(session, world_id):
     blocks = {}
     gen_terrain_base(blocks)
     gen_stone_biome(blocks)
@@ -88,7 +80,7 @@ def generate_no_async(world_id):
     gen_caves(blocks)
     gen_surface(blocks)
     gen_trees(blocks)
-    persist_blocks(blocks, world_id)
+    persist_blocks(session, blocks, world_id)
 
 def gen_terrain_base(blocks):
     for x in range(world_width):
@@ -205,7 +197,7 @@ def paint_in_sphere(blocks, x, y, z, min_radius, max_radius, block_id):
                         blocks[(nx, ny, z)] = block_id
 
 
-def persist_blocks(blocks, world_id):
+def persist_blocks(session, blocks, world_id):
     for (x, y, z), block_id in blocks.items():
         stmt = insert(WorldHasBlocks).values(world_id=world_id, block_id=block_id, x=x, y=y)
         session.execute(stmt)
