@@ -1,4 +1,4 @@
-# Minimc
+# Minimc - 2D Playble Minecraft in Discord
 - - - - -
 ![Test Image 3](Assets/banner.png)
 
