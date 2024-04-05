@@ -45,6 +45,7 @@ pip install -r requirements.txt
 - 💡 2D calculated lighting
 - 🧱 `Block` states with different rendering depending on the state
 - 🔓 Z-Axis so `blocks` can be rendered in the background/foreground
+- 🐌 Using Threading for the world generation process
 - - - - -
 ### Ideas
 - Redstone
