@@ -1,4 +1,5 @@
-## Minimc
+# Minimc
+- - - - -
 ![Test Image 3](Assets/banner.png)
 
 Minimc is a playable **MMO minecraft** 'clone' in Discord.
@@ -26,20 +27,27 @@ MariaDB
  engine = create_engine(f"mysql+pymysql://{user}:{pwd}@{host}/{database}")
  ```
 
-Install the required libraries from [requirements.txt](requirements.txt)
-You should now be able to generate a world with the slash command `/generate`
+Install the required libraries from [requirements.txt](requirements.txt) using [pip](https://pypi.org/project/pip/) 
+
+```
+pip install -r requirements.txt
+```
+🎉 You should now be able to generate a world with the slash command `/generate`
 - - - - -
-## Feature list
-- Player movement & rendering
-- Placing / Destroying `blocks`
-- Physics affecting `blocks` and `entities` (sand, gravel, player gravity)
-- Structure generation ( Able to create your own presets and spawn them in, see [tree.py](tree.py) )
-- World generation including ores, caves
-- Multiplayer synced movement, servers wtih invite functionality
-- 2D calculated lighting
-- `Block` states with different rendering depending on the state
-- Z-Axis so `blocks` can be rendered in the background/foreground
+### Feature list
+- 🏃‍♂️ Player movement & rendering
+- 👊 Placing / Destroying `blocks`
+- ✨ Physics affecting `blocks` and `entities` (sand, gravel, player gravity)
+- 🏠 Structure generation ( Able to create your own presets and spawn them in, see [tree.py](tree.py) )
+- 🌎 World generation including ores, caves
+- 🎮 Multiplayer synced movement, servers wtih invite functionality
+- 💡 2D calculated lighting
+- 🧱 `Block` states with different rendering depending on the state
+- 🔓 Z-Axis so `blocks` can be rendered in the background/foreground
 - - - - -
-## Ideas
+### Ideas
 - Redstone
 - AI `entities` ( chicken, cow, zombie, . . )
+- Dimensions
+- Health & fall damage
+- PVP
