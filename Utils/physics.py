@@ -1,4 +1,4 @@
-from sqlalchemy import update, and_
+from sqlalchemy import and_
 
 from Classes import WorldHasBlocks, Block
 from session import session

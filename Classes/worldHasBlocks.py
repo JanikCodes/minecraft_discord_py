@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, ForeignKey, Boolean, update
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 
 from Classes import Block

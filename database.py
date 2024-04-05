@@ -13,6 +13,7 @@ host = os.getenv("host")
 user = os.getenv("user")
 pwd = os.getenv("password")
 database = os.getenv("database")
-engine = create_engine(f"mysql+mysqlconnector://{user}:{pwd}@{host}/{database}")
+# engine = create_engine(f"mysql+pymysql://{user}:{pwd}@{host}/{database}") # Use for MariaDB
+engine = create_engine(f"mysql+mysqlconnector://{user}:{pwd}@{host}/{database}") # Use for MySQL
 base.Base.metadata.create_all(engine)
 

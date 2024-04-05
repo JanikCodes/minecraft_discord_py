@@ -1,11 +1,9 @@
-import io
 import discord
-from discord import app_commands, File
+from discord import app_commands
 from discord.ext import commands
 from Classes import World, WorldHasBlocks
 from Classes import WorldHasUsers
 from session import session
-
 
 
 class AddPlayerCommand(commands.Cog):
