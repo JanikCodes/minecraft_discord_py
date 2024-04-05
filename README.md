@@ -39,9 +39,9 @@ pip install -r requirements.txt
 - 👊 Placing / Destroying `blocks`
 - 🍎 Physics affecting `blocks` and `entities` (sand, gravel, player gravity)
 - ✨ Collision detection
-- 🏠 Structure generation ( Able to create your own presets and spawn them in, see [tree.py](tree.py) )
-- 🌎 World generation including ores, caves
-- 🎮 Multiplayer synced movement, servers wtih invite functionality
+- 🏠 `Structure` generation ( Able to create your own presets and spawn them in, see [tree.py](tree.py) )
+- 🌎 `World` generation including ores, caves
+- 🎮 Multiplayer synced movement & states, worlds with invite functionality
 - 💡 2D calculated lighting
 - 🧱 `Block` states with different rendering depending on the state
 - 🔓 Z-Axis so `blocks` can be rendered in the background/foreground
@@ -49,7 +49,11 @@ pip install -r requirements.txt
 - - - - -
 ### Ideas
 - Redstone
-- AI `entities` ( chicken, cow, zombie, . . )
+- AI entities ( chicken, cow, zombie, . . )
 - Dimensions
 - Health & fall damage
 - PVP
+- Public worlds with server browser ( limited amount of course )
+- Dynamic block states based on more logic ( example: Torch sprite based on adjacent blocks )
+- Block functionality ( TNT that destroys blocks in a radius uppon interacting )
+- Water/Lava simulation

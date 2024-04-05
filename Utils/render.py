@@ -8,10 +8,9 @@ from session import session
 
 block_images_folder = "Blocks"
 sky_color = (115, 210, 229)
-view_range_width = 25  # 25
+view_range_width = 15  # 25
 view_range_height = 15  # 20
 light_strength = 15
-
 
 def calculate_view_range(center_x, center_y, view_range_width, view_range_height):
     half_view_width = view_range_width // 2
@@ -49,22 +48,8 @@ async def render_world(world_id, user_id, debug=False):
     world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y)
 
     if debug:
-        print("Generated new image..")
+        print("Stored debug game view in /WorldOutput")
         world_map_with_lighting.save("WorldOutput/world_map.png")
-
-    return world_map_with_lighting
-
-def render_world_no_async(world_id):
-    start_x, end_x, start_y, end_y = calculate_view_range(world_width / 2, world_height / 2, 100, 100)
-    block_data = query_block_data(world_id, start_x, end_x, start_y, end_y)
-
-    # sort blocks by z axis
-    block_data.sort(key=lambda x: x[1].z)
-
-    light_map = propagate_light(block_data)
-    world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y)
-
-    world_map_with_lighting.save("WorldOutput/world_map.png")
 
     return world_map_with_lighting
 
