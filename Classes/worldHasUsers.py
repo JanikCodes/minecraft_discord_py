@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, ForeignKey, String, update
-from sqlalchemy.orm import relationship
-from Classes import WorldHasBlocks
+from sqlalchemy import Column, Integer, ForeignKey, String, update, and_
+from sqlalchemy.orm import relationship, aliased
+from Classes import WorldHasBlocks, Block
 from base import Base
 
 
@@ -42,7 +42,22 @@ class WorldHasUsers(Base):
         return lower_block_direction
 
     def update_movement(self, session, dir_x, dir_y):
-        # update player facing direction & block_state uppon change
+        def is_block_solid(x, y):
+            # create aliases for the tables
+            WorldHasBlocksAlias = aliased(WorldHasBlocks)
+            BlockAlias = aliased(Block)
+
+            block_query = session.query(BlockAlias.solid) \
+                .join(WorldHasBlocksAlias, WorldHasBlocksAlias.block_id == BlockAlias.id) \
+                .filter(WorldHasBlocksAlias.x == x, WorldHasBlocksAlias.y == y) \
+                .first()
+
+            if block_query is None:
+                return False
+
+            return block_query.solid
+
+        # update player facing direction & block_state upon direction change
         if dir_x != 0:
             # update state_direction in WorldHasBlocks
             update_block_state_direction = update(WorldHasBlocks) \
@@ -51,12 +66,16 @@ class WorldHasUsers(Base):
             session.execute(update_block_state_direction)
             session.commit()
 
-        # update player associated blocks
-        update_player_blocks = update(WorldHasBlocks) \
-            .where(WorldHasBlocks.id.in_([self.upper_block_id, self.lower_block_id])) \
-            .values({
-            WorldHasBlocks.x: WorldHasBlocks.x + dir_x,
-            WorldHasBlocks.y: WorldHasBlocks.y + dir_y
-        })
-        session.execute(update_player_blocks)
-        session.commit()
+        # check for block collisions that are solid
+        if not is_block_solid(self.get_position(session).x + dir_x, self.get_position(session).y + dir_y)\
+                and not is_block_solid(self.get_position(session).x + dir_x, self.get_position(session).y - 1 + dir_y):
+
+            # update player associated blocks if valid
+            update_player_blocks = update(WorldHasBlocks) \
+                .where(WorldHasBlocks.id.in_([self.upper_block_id, self.lower_block_id])) \
+                .values({
+                WorldHasBlocks.x: WorldHasBlocks.x + dir_x,
+                WorldHasBlocks.y: WorldHasBlocks.y + dir_y
+            })
+            session.execute(update_player_blocks)
+            session.commit()

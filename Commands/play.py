@@ -111,8 +111,7 @@ class ModeButton(discord.ui.Button):
         self.world = world
     async def callback(self, interaction: discord.Interaction):
 
-        # update player movement, direction & associated blocks
-        # world_has_user.update_movement(session=session, dir_x=self.dir_x, dir_y=self.dir_y)
+        # TODO
 
         await HandleTick(world=self.world, interaction=interaction)
 
