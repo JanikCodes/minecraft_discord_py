@@ -31,6 +31,6 @@ async def handle_physics(world):
             block.y += 1
             affected_by_physics += 1
 
-    print(f"Physics changed {affected_by_physics} block/s")
+    # print(f"Physics changed {affected_by_physics} block/s")
     # Commit the changes to the database
     session.commit()

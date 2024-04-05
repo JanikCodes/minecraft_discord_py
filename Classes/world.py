@@ -21,8 +21,6 @@ class World(Base):
     def spawn_player(self, session, user_id):
         from Classes import WorldHasBlocks, WorldHasUsers
 
-        print(self.get_valid_spawn_position(session))
-
         # add player representive blocks
         upper_body_block = WorldHasBlocks(world_id=self.id, block_id=11, x=self.get_valid_spawn_position(session).x, y=self.get_valid_spawn_position(session).y)
         session.add(upper_body_block)
