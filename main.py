@@ -11,7 +11,7 @@ import executeFixtures
 
 class Client(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix='.', intents=discord.Intents().all())
+        super().__init__(command_prefix='.', intents=discord.Intents().default())
 
     async def setup_hook(self):
         for fileName in os.listdir('./Commands'):

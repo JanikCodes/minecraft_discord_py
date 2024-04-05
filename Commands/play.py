@@ -54,6 +54,12 @@ class WorldSelect(discord.ui.Select):
             self.add_option(label=f"{world.name}", value=f"{world.id}", emoji="🌎")
 
     async def callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != str(self.user_id):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
         world_id = self.values[0]
 
         world = session.query(World).filter(World.id == world_id).first()
@@ -110,6 +116,11 @@ class ModeButton(discord.ui.Button):
         self.user = user
         self.world = world
     async def callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != (self.user.user_id):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
         # TODO
 
@@ -125,6 +136,12 @@ class ActionButton(discord.ui.Button):
         self.world = world
         self.emoji = "✖"
     async def callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != str(self.user.user_id):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
         world_has_block = session.query(WorldHasBlocks) \
             .filter(WorldHasBlocks.world_id == self.world.id).first()
 
@@ -148,6 +165,12 @@ class MoveButton(discord.ui.Button):
         self.world = world
 
     async def callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != str(self.user.user_id):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
         # update player movement, direction & associated blocks
         self.user.update_movement(session=session, dir_x=self.dir_x, dir_y=self.dir_y)
 
