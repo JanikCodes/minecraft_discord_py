@@ -51,27 +51,15 @@ class GenerateCommand(commands.Cog):
         session.commit()
         world_id = world.id
 
-        upper_body_block = WorldHasBlocks(world_id=world_id, block_id=11, x=15, y=14)
-        session.add(upper_body_block)
-        session.commit()
-
-        lower_body_block = WorldHasBlocks(world_id=world_id, block_id=12, x=15, y=15)
-        session.add(lower_body_block)
-        session.commit()
-
-        # add new user to db relation
-        user = WorldHasUsers(world_id=world_id, user_id=user_id, upper_block_id=upper_body_block.id,
-                             lower_block_id=lower_body_block.id)
-        session.add(user)
-        session.commit()
-
         embed = discord.Embed(title=f"World Generation",
                               description=f"Currently generating world `{world_name}`...\n"
                                           f"This can take a while...")
         embed.colour = discord.Color.red()
 
         # start generate process
-        generate(world_id)
+        await generate(world_id)
+
+        world.spawn_player(session=session, user_id=user_id)
 
         await interaction.followup.send(embed=embed)
 
@@ -80,7 +68,18 @@ async def setup(client: commands.Bot) -> None:
     await client.add_cog(GenerateCommand(client))
 
 
-def generate(world_id):
+async def generate(world_id):
+    blocks = {}
+    gen_terrain_base(blocks)
+    gen_stone_biome(blocks)
+    gen_dirt_biome(blocks)
+    gen_ores(blocks)
+    gen_caves(blocks)
+    gen_surface(blocks)
+    gen_trees(blocks)
+    persist_blocks(blocks, world_id)
+
+def generate_no_async(world_id):
     blocks = {}
     gen_terrain_base(blocks)
     gen_stone_biome(blocks)

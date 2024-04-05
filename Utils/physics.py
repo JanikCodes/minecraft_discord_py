@@ -10,18 +10,19 @@ async def handle_physics(world):
 
     # get all blocks that have gravity enabled for this world
     blocks_with_gravity = session.query(WorldHasBlocks).join(Block).filter(
-        and_(WorldHasBlocks.world_id == world.id, Block.gravity == True)
+        and_(WorldHasBlocks.world_id == world.id, Block.gravity == True, Block.z == 1)
     ).order_by(WorldHasBlocks.y.desc()).all()
 
     affected_by_physics = 0
 
     for block in blocks_with_gravity:
         # get the block below this block
-        block_below = session.query(WorldHasBlocks).filter(
+        block_below = session.query(WorldHasBlocks).join(Block).filter(
             and_(
                 WorldHasBlocks.world_id == world.id,
                 WorldHasBlocks.x == block.x,
-                WorldHasBlocks.y == block.y + 1
+                WorldHasBlocks.y == block.y + 1,
+                Block.z == 1
             )
         ).first()
 
@@ -31,6 +32,5 @@ async def handle_physics(world):
             affected_by_physics += 1
 
     print(f"Physics changed {affected_by_physics} block/s")
-
     # Commit the changes to the database
     session.commit()

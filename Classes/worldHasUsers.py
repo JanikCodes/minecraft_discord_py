@@ -47,15 +47,21 @@ class WorldHasUsers(Base):
             WorldHasBlocksAlias = aliased(WorldHasBlocks)
             BlockAlias = aliased(Block)
 
-            block_query = session.query(BlockAlias.solid) \
+            block_query = session.query(BlockAlias.solid, BlockAlias.id) \
                 .join(WorldHasBlocksAlias, WorldHasBlocksAlias.block_id == BlockAlias.id) \
-                .filter(WorldHasBlocksAlias.x == x, WorldHasBlocksAlias.y == y) \
-                .first()
+                .filter(WorldHasBlocksAlias.world_id == self.world_id, WorldHasBlocksAlias.x == x, WorldHasBlocksAlias.y == y) \
+                .all()
 
             if block_query is None:
                 return False
 
-            return block_query.solid
+            found_solid = False
+            for block_in_query in block_query:
+                if block_in_query.solid:
+                    found_solid = True
+                    break
+
+            return found_solid
 
         # update player facing direction & block_state upon direction change
         if dir_x != 0:

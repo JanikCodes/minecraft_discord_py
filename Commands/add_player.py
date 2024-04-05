@@ -51,28 +51,14 @@ class WorldSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         world_id = self.values[0]
 
-        # maybe I need this for spawn position later?
-        # world = session.query(World).filter(World.id == world_id).first()
-
         exist_in_world = session.query(WorldHasUsers)\
             .filter(WorldHasUsers.user_id == self.add_player_user.id)\
             .filter(WorldHasUsers.world_id == world_id).first()
 
         if not exist_in_world:
-            # add new user associated blocks
-            upper_body_block = WorldHasBlocks(world_id=world_id, block_id=11, x=15, y=14)
-            session.add(upper_body_block)
-            session.commit()
+            world = session.query(World).filter(World.id == world_id).first()
 
-            lower_body_block = WorldHasBlocks(world_id=world_id, block_id=12, x=15, y=15)
-            session.add(lower_body_block)
-            session.commit()
-
-            # add new user to db relation
-            user = WorldHasUsers(world_id=world_id, user_id=self.add_player_user.id, upper_block_id=upper_body_block.id,
-                                 lower_block_id=lower_body_block.id)
-            session.add(user)
-            session.commit()
+            world.spawn_player(session=session, user_id=self.add_player_user.id)
 
             message = interaction.message
             edited_embed = message.embeds[0]

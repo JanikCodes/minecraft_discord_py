@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from Classes import Block
 from base import Base
 
+
 class WorldHasBlocks(Base):
     __tablename__ = "world_has_blocks"
 
@@ -27,7 +28,7 @@ class WorldHasBlocks(Base):
         self.x = x
         self.y = y
 
-    def destroy_block_at_position(self, session,  x, y, block_id=1, z=1):
+    def destroy_block_at_position(self, session, x, y, z=1):
         # query WorldHasBlocks to get all entities matching the world_id, x, and y
         # this can return multiple entities based due to the z axis not taken into account yet
         world_blocks_at_position = session.query(WorldHasBlocks) \
@@ -43,4 +44,3 @@ class WorldHasBlocks(Base):
                 session.delete(world_block)
                 session.commit()
                 break
-

@@ -6,7 +6,7 @@ from discord.ext import commands
 from sqlalchemy import delete
 
 from Classes import WorldHasUsers, WorldHasBlocks, World
-from Commands.generate import generate
+from Commands.generate import generate_no_async
 from Utils.render import render_world_no_async
 from session import session
 
@@ -69,7 +69,7 @@ if draw_entire_world_only:
     session.add(user)
     session.commit()
 
-    generate(world_id)
+    generate_no_async(world_id)
     render_world_no_async(world_id)
 else:
     client = Client()
