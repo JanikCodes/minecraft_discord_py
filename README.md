@@ -37,7 +37,8 @@ pip install -r requirements.txt
 ### Feature list
 - 🏃‍♂️ Player movement & rendering
 - 👊 Placing / Destroying `blocks`
-- ✨ Physics affecting `blocks` and `entities` (sand, gravel, player gravity)
+- 🍎 Physics affecting `blocks` and `entities` (sand, gravel, player gravity)
+- ✨ Collision detection
 - 🏠 Structure generation ( Able to create your own presets and spawn them in, see [tree.py](tree.py) )
 - 🌎 World generation including ores, caves
 - 🎮 Multiplayer synced movement, servers wtih invite functionality
