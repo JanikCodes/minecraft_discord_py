@@ -1,0 +1,5 @@
+discord.py==2.3.2
+numpy==1.26.4
+Pillow==10.3.0
+python-dotenv==1.0.1
+SQLAlchemy==2.0.29
