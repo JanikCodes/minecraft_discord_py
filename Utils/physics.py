@@ -1,10 +1,8 @@
 from sqlalchemy import and_
-
 from Classes import WorldHasBlocks, Block
-from session import session
 
 
-async def handle_physics(world):
+async def handle_physics(world, session):
     # update all blocks that have gravity enabled
     # update y-1 if a non-solid block exists on that position
 

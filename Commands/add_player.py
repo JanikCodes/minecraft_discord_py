@@ -1,9 +1,9 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from Classes import World, WorldHasBlocks
+from Classes import World
 from Classes import WorldHasUsers
-from session import session
+from session import session, Session
 
 
 class AddPlayerCommand(commands.Cog):
@@ -18,15 +18,28 @@ class AddPlayerCommand(commands.Cog):
         embed = discord.Embed(title=f"Adding {user.name} to world..",
                               description=f"Please select one of your worlds..")
 
-        # get player worlds
-        worlds = session.query(World).join(World.users).filter(WorldHasUsers.user_id == user_id).all()
+        # create a new session for this request
+        session = Session()
 
-        if not worlds:
-            embed.colour = discord.Color.red()
-            embed.set_footer(text="You don't have any world ready right now! You can create one with /generate")
-            await interaction.followup.send(embed=embed)
-        else:
-            await interaction.followup.send(embed=embed, view=WorldSelectionView(user_id=user_id, worlds=worlds, add_player_user=user))
+        try:
+            # get player worlds
+            worlds = session.query(World).join(World.users).filter(WorldHasUsers.user_id == user_id).all()
+
+            if not worlds:
+                embed.colour = discord.Color.red()
+                embed.set_footer(text="You don't have any world ready right now! You can create one with /generate")
+                await interaction.followup.send(embed=embed)
+            else:
+                await interaction.followup.send(embed=embed, view=WorldSelectionView(user_id=user_id, worlds=worlds, add_player_user=user))
+
+            session.commit()
+        except Exception as e:
+            # rollback the transaction if an error occurs
+            session.rollback()
+            raise e
+        finally:
+            # close the session
+            session.close()
 
 
 async def setup(client: commands.Bot) -> None:

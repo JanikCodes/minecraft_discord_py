@@ -2,7 +2,7 @@ import random
 import threading
 import time
 from sqlalchemy.orm import sessionmaker
-from Classes import World, WorldHasBlocks, Block
+from Classes import World
 
 world_generation_interval = 3
 
@@ -10,7 +10,6 @@ class ExecuteQueue(threading.Thread):
     from database import engine
 
     Session = sessionmaker(bind=engine)
-    session = Session()
 
     world_queue = []
 
@@ -23,21 +22,32 @@ class ExecuteQueue(threading.Thread):
             time.sleep(world_generation_interval)
 
             if len(self.world_queue) > 0:
-                # choose a world to generate
-                print("Generating new world from queue..")
-                queue_item = random.choice(self.world_queue)
+                # create a new session for this request
+                session = self.Session()
 
-                # add new world to db
-                world = World(name=queue_item.world_name, owner=queue_item.user_id)
-                self.session.add(world)
-                self.session.commit()
+                try:
+                    # choose a world to generate
+                    print("Generating new world from queue..")
+                    queue_item = random.choice(self.world_queue)
 
-                # start generate process
-                from Commands.generate import generate_no_async
-                generate_no_async(session=self.session, world_id=world.id)
+                    # add new world to db
+                    world = World(name=queue_item.world_name, owner=queue_item.user_id)
+                    session.add(world)
+                    session.commit()
 
-                world.spawn_player(session=self.session, user_id=queue_item.user_id)
+                    # start generate process
+                    from Commands.generate import generate_no_async
+                    generate_no_async(session=session, world_id=world.id)
 
-                self.world_queue.remove(queue_item)
+                    world.spawn_player(session=session, user_id=queue_item.user_id)
 
-                print("Done!")
+                    self.world_queue.remove(queue_item)
+
+                    session.commit()
+                except Exception as e:
+                    # rollback the transaction if an error occurs
+                    session.rollback()
+                    raise e
+                finally:
+                    # close the session
+                    session.close()
