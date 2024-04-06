@@ -1,6 +1,12 @@
-# Minimc
+# Minimc - 2D Playble Minecraft in Discord
 - - - - -
 ![Test Image 3](Assets/banner.png)
+
+> [!IMPORTANT]
+> The bot is running on my server right now, expect it to go down sometimes. Otherwise host it yourself.
+>
+> Invite the bot [here](https://discord.com/oauth2/authorize?client_id=1098581527446700083&permissions=2147871745&scope=bot)
+
 
 Minimc is a playable **MMO minecraft** 'clone' in Discord.
 <br>You can **generate unique worlds**, **invite your friends** to them and play together.
