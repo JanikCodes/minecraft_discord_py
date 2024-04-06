@@ -14,4 +14,4 @@ stone_background = Block(10, name="Stone Darken", solid=False, gravity=False, li
 player_upper = Block(11, name="SSU", solid=True, gravity=True, light_level=0, z=1, debug_color="#F2BB90")
 player_lower = Block(12, name="SSL", solid=True, gravity=True, light_level=0, z=1, debug_color="#0F399F")
 wooden_log = Block(13, name="Wooden Log", solid=True, gravity=False, light_level=0, z=1, debug_color="#A25013")
-leave = Block(14, name="Leave", solid=False, gravity=False, light_level=0, z=1, debug_color="#269610")
+leave = Block(14, name="Leave", solid=True, gravity=False, light_level=0, z=1, debug_color="#269610")
