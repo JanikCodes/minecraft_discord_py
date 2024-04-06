@@ -2,6 +2,8 @@ import io
 import discord
 from discord import app_commands, File
 from discord.ext import commands
+from sqlalchemy import update
+
 from Classes import World, WorldHasBlocks
 from Classes import WorldHasUsers
 from Utils.physics import handle_physics
@@ -102,42 +104,62 @@ async def handle_rendering(world, interaction, session):
 class WorldGameView(discord.ui.View):
     def __init__(self, user_id, world, session):
         super().__init__()
-        # get user current mode
-        mode = "break"
 
         world_has_user = session.query(WorldHasUsers) \
             .filter(WorldHasUsers.world_id == world.id) \
             .filter(WorldHasUsers.user_id == user_id).first()
 
-        self.add_item(
-            ActionButton(mode=mode, user=world_has_user, dir_x=-1, dir_y=-1, world=world, row=1, session=session))
-        self.add_item(
-            MoveButton(label="Up", user=world_has_user, dir_x=0, dir_y=-2, world=world, row=1, session=session))
-        self.add_item(
-            ActionButton(mode=mode, user=world_has_user, dir_x=1, dir_y=-1, world=world, row=1, session=session))
-        # self.add_item(ModeButton(mode="Build", emoji="🧱", user=world_has_user, world=world, row=1))
-        self.add_item(
-            MoveButton(label="Left", user=world_has_user, dir_x=-1, dir_y=0, world=world, row=2, session=session))
-        self.add_item(
-            ActionButton(mode=mode, user=world_has_user, dir_x=world_has_user.get_direction(session=session), dir_y=0,
-                         world=world, row=2, session=session))
-        self.add_item(
-            MoveButton(label="Right", user=world_has_user, dir_x=1, dir_y=0, world=world, row=2, session=session))
-        # self.add_item(ModeButton(mode="Break", emoji="⚒", user=world_has_user, world=world, row=2))
-        self.add_item(
-            ActionButton(mode=mode, user=world_has_user, dir_x=-1, dir_y=1, world=world, row=3, session=session))
-        self.add_item(
-            MoveButton(label="Down", user=world_has_user, dir_x=0, dir_y=1, world=world, row=3, session=session))
-        self.add_item(
-            ActionButton(mode=mode, user=world_has_user, dir_x=1, dir_y=1, world=world, row=3, session=session))
+        # get user current mode
+        mode = world_has_user.mode
 
+        if mode == 'BUILD' or mode == 'BREAK':
+            self.add_item(ActionButton(mode=mode, user=world_has_user, dir_x=-1, dir_y=-1, world=world, row=1,
+                                       session=session))
+            self.add_item(ActionButton(mode=mode, user=world_has_user, dir_x=0, dir_y=-2, world=world, row=1,
+                                       session=session))
+            self.add_item(ActionButton(mode=mode, user=world_has_user, dir_x=1, dir_y=-1, world=world, row=1,
+                                       session=session))
+
+            self.add_item(ActionButton(mode=mode, user=world_has_user, dir_x=-1, dir_y=0, world=world, row=2,
+                                       session=session))
+            self.add_item(NoneButton(emoji='🚫', row=2))
+            self.add_item(ActionButton(mode=mode, user=world_has_user, dir_x=1, dir_y=0, world=world, row=2,
+                                       session=session))
+
+            self.add_item(ActionButton(mode=mode, user=world_has_user, dir_x=-1, dir_y=1, world=world, row=3,
+                                       session=session))
+            self.add_item(ActionButton(mode=mode, user=world_has_user, dir_x=0, dir_y=1, world=world, row=3,
+                                       session=session))
+            self.add_item(ActionButton(mode=mode, user=world_has_user, dir_x=1, dir_y=1, world=world, row=3,
+                                       session=session))
+        else:
+            self.add_item(MoveButton(emoji="↖", user=world_has_user, dir_x=-1, dir_y=-1, world=world, row=1, session=session))
+            self.add_item(MoveButton(emoji="⬆", user=world_has_user, dir_x=0, dir_y=-1, world=world, row=1, session=session))
+            self.add_item(MoveButton(emoji="↗", user=world_has_user, dir_x=1, dir_y=-1, world=world, row=1, session=session))
+
+            self.add_item(MoveButton(emoji="⬅", user=world_has_user, dir_x=-1, dir_y=0, world=world, row=2, session=session))
+            self.add_item(NoneButton(emoji='🚫', row=2))
+            self.add_item(MoveButton(emoji="➡", user=world_has_user, dir_x=1, dir_y=0, world=world, row=2, session=session))
+
+            self.add_item(MoveButton(emoji="↙", user=world_has_user, dir_x=-1, dir_y=1, world=world, row=3, session=session))
+            self.add_item(MoveButton(emoji="⬇", user=world_has_user, dir_x=0, dir_y=1, world=world, row=3, session=session))
+            self.add_item(MoveButton(emoji="↘", user=world_has_user, dir_x=1, dir_y=1, world=world, row=3, session=session))
+
+        self.add_item(ModeButton(mode="MOVE", emoji="🏃‍♂️", current_mode=mode, user=world_has_user, world=world, row=1, session=session))
+        self.add_item(ModeButton(mode="BREAK", emoji="💥", current_mode=mode, user=world_has_user, world=world, row=2, session=session))
+        self.add_item(ModeButton(mode="BUILD", emoji="🧱", current_mode=mode, user=world_has_user, world=world, row=3, session=session))
 
 class ModeButton(discord.ui.Button):
-    def __init__(self, mode, emoji, user, world, row):
-        super().__init__(emoji=emoji, style=discord.ButtonStyle.success, row=row)
+    def __init__(self, mode, emoji, current_mode, user, world, row, session):
+        super().__init__(emoji=emoji, row=row)
         self.mode = mode
+        self.current_mode = current_mode
         self.user = user
         self.world = world
+        self.session = session
+        # change button color based if the mode is currently selected or not
+        self.style = discord.ButtonStyle.success if current_mode == mode else discord.ButtonStyle.primary
+        self.disabled = True if mode == 'BUILD' else False
 
     async def callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != (self.user.user_id):
@@ -146,20 +168,26 @@ class ModeButton(discord.ui.Button):
                                   colour=discord.Color.red())
             return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
 
-        # TODO
+        # update user mode
+        update_mode = update(WorldHasUsers) \
+            .where(WorldHasUsers.world_id == self.world.id) \
+            .where(WorldHasUsers.user_id == self.user.user_id) \
+            .values({WorldHasUsers.mode: self.mode})
+        self.session.execute(update_mode)
+        self.session.commit()
 
-        await HandleTick(world=self.world, interaction=interaction)
+        await HandleTick(world=self.world, interaction=interaction, session=self.session)
 
 
 class ActionButton(discord.ui.Button):
     def __init__(self, mode, user, dir_x, dir_y, world, row, session):
-        super().__init__(style=discord.ButtonStyle.danger, row=row)
+        super().__init__(style=discord.ButtonStyle.secondary, row=row)
         self.mode = mode
         self.user = user
         self.dir_x = dir_x
         self.dir_y = dir_y
         self.world = world
-        self.emoji = "✖"
+        self.emoji = "🖐"
         self.session = session
 
     async def callback(self, interaction: discord.Interaction):
@@ -175,19 +203,19 @@ class ActionButton(discord.ui.Button):
         position = self.user.get_position(session=self.session)
 
         match self.mode:
-            case 'break':
+            case 'BREAK':
                 world_has_block.destroy_block_at_position(session=self.session, x=position.x + self.dir_x,
                                                           y=position.y + self.dir_y)
                 pass
-            case 'build':
+            case 'BUILD':
                 pass
 
         await HandleTick(world=self.world, interaction=interaction, session=self.session)
 
 
 class MoveButton(discord.ui.Button):
-    def __init__(self, label, user, dir_x, dir_y, world, row, session):
-        super().__init__(label=label, style=discord.ButtonStyle.primary, row=row)
+    def __init__(self, emoji, user, dir_x, dir_y, world, row, session):
+        super().__init__(emoji=emoji, style=discord.ButtonStyle.secondary, row=row)
         self.user = user
         self.dir_x = dir_x
         self.dir_y = dir_y
@@ -206,6 +234,9 @@ class MoveButton(discord.ui.Button):
 
         await HandleTick(world=self.world, interaction=interaction, session=self.session)
 
+class NoneButton(discord.ui.Button):
+    def __init__(self, emoji, row):
+        super().__init__(emoji=emoji, style=discord.ButtonStyle.secondary, row=row, disabled=True)
 
 async def HandleTick(world, interaction, session):
     # physics

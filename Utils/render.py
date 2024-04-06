@@ -8,7 +8,7 @@ from session import session
 
 block_images_folder = "Blocks"
 sky_color = (115, 210, 229)
-view_range_width = 15  # 25
+view_range_width = 18  # 25
 view_range_height = 15  # 20
 light_strength = 15
 

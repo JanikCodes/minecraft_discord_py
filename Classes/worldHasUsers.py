@@ -12,15 +12,17 @@ class WorldHasUsers(Base):
     user_id = Column("user_id", String(80))
     upper_block_id = Column("upper_block_id", Integer, ForeignKey('world_has_blocks.id'))
     lower_block_id = Column("lower_block_id", Integer, ForeignKey('world_has_blocks.id'))
+    mode = Column("mode", String(40), default='MOVE')
 
     # define relationships
     world = relationship("World", back_populates="users")
 
-    def __init__(self, world_id, user_id, upper_block_id, lower_block_id):
+    def __init__(self, world_id, user_id, upper_block_id, lower_block_id, mode='MOVE'):
         self.world_id = world_id
         self.user_id = user_id
         self.upper_block_id = upper_block_id
         self.lower_block_id = lower_block_id
+        self.mode = mode
 
     def get_position(self, session):
         # query WorldHasBlocks for the x and y values of the lower block
