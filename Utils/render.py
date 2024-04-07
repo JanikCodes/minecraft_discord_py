@@ -12,6 +12,7 @@ view_range_width = 18  # 25
 view_range_height = 15  # 20
 light_strength = 15
 
+
 def calculate_view_range(center_x, center_y, view_range_width, view_range_height):
     half_view_width = view_range_width // 2
     half_view_height = view_range_height // 2
@@ -22,13 +23,19 @@ def calculate_view_range(center_x, center_y, view_range_width, view_range_height
     return start_x, end_x, start_y, end_y
 
 
-def query_block_data(world_id, start_x, end_x, start_y, end_y):
+def query_block_data(world_id, start_x, end_x, start_y, end_y, light_distance=0):
+    extended_start_x = max(0, start_x - light_distance)
+    extended_end_x = min(world_width, end_x + light_distance)
+    extended_start_y = max(0, start_y - light_distance)
+    extended_end_y = min(world_height, end_y + light_distance)
+
     return session.query(WorldHasBlocks, Block) \
         .join(Block) \
         .filter(WorldHasBlocks.world_id == world_id) \
-        .filter(WorldHasBlocks.x >= start_x, WorldHasBlocks.x < end_x) \
-        .filter(WorldHasBlocks.y >= start_y, WorldHasBlocks.y < end_y) \
+        .filter(WorldHasBlocks.x >= extended_start_x, WorldHasBlocks.x < extended_end_x) \
+        .filter(WorldHasBlocks.y >= extended_start_y, WorldHasBlocks.y < extended_end_y) \
         .all()
+
 
 async def render_world(world_id, user_id, debug=False):
     # we use the player_lower block as the root for camera position & collision checks
@@ -38,13 +45,15 @@ async def render_world(world_id, user_id, debug=False):
         WorldHasBlocks.id == WorldHasUsers.lower_block_id
     )).first()
 
-    start_x, end_x, start_y, end_y = calculate_view_range(user_root_block.x, user_root_block.y, view_range_width, view_range_height)
+    start_x, end_x, start_y, end_y = calculate_view_range(user_root_block.x, user_root_block.y, view_range_width,
+                                                          view_range_height)
     block_data = query_block_data(world_id, start_x, end_x, start_y, end_y)
+    block_data_light = query_block_data(world_id, start_x, end_x, start_y, end_y, 5)
 
     # sort blocks by z axis
     block_data.sort(key=lambda x: x[1].z)
 
-    light_map = propagate_light(block_data)
+    light_map = propagate_light(block_data_light)
     world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y)
 
     if debug:
@@ -53,10 +62,11 @@ async def render_world(world_id, user_id, debug=False):
 
     return world_map_with_lighting
 
-def propagate_light(block_data):
+
+def propagate_light(block_data_light):
     light_map = np.zeros((world_width, world_height), dtype=int)
 
-    for block_rel, block in block_data:
+    for block_rel, block in block_data_light:
         light_map[block_rel.x, block_rel.y] = block.light_level
 
     for _ in range(light_strength):
