@@ -40,7 +40,11 @@ class WorldHasBlocks(Base):
         for world_block in world_blocks_at_position:
             # check if the z value of the block matches the provided z
             if world_block.block.z == z:
-                # delete the block rel
-                session.delete(world_block)
-                session.commit()
-                break
+                if world_block.block.breakable:
+                    # delete the block rel
+                    session.delete(world_block)
+                    session.commit()
+                    break
+                else:
+                    # block is not breakable
+                    break

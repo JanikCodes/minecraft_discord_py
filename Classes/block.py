@@ -10,6 +10,7 @@ class Block(Base):
     name = Column("name", String(80))
     solid = Column("solid", Boolean)
     gravity = Column("gravity", Boolean, default=False)
+    breakable = Column("breakable", Boolean, default=True)
     light_level = Column("light_level", Integer, default=0)
     z = Column("z", Integer, default=0)
     debug_color = Column("debug_color", String(20))
@@ -18,11 +19,12 @@ class Block(Base):
     worlds = relationship("WorldHasBlocks", back_populates="block")
     block_states = relationship("BlockHasStates", back_populates="block")
 
-    def __init__(self, id, name, solid, gravity, light_level, z, debug_color):
+    def __init__(self, id, name, solid, gravity, breakable, light_level, z, debug_color):
         self.id = id
         self.name = name
         self.solid = solid
         self.gravity = gravity
+        self.breakable = breakable
         self.light_level = light_level
         self.z = z
         self.debug_color = debug_color
