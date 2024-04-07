@@ -15,9 +15,7 @@ The game features various logic like handling **physics**, **tick rate**, **coll
 <br>This new version includes **image generation** which eliminated certain limitations I ran into previously. (Old version used a conversion from data to emojis for rendering the world)
 - - - - -
 ## How to contribute
-Modify the [your.env](.env) with your required credentials. 
-
-Rename `your.env` to `.env`
+Create a `.env` file, it should look like [your.env](your.env) but replace the variables with your credentials
 
 Create your database (example: [MySQL](https://www.mysql.com/de/)) with the correct name from [.env](.env)
 
@@ -57,6 +55,7 @@ pip install -r requirements.txt
 - Redstone
 - AI entities ( chicken, cow, zombie, . . )
 - Dimensions
+- Biomes
 - Health & fall damage
 - PVP
 - Public worlds with server browser ( limited amount of course )
