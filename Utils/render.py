@@ -4,7 +4,6 @@ from PIL import Image
 from sqlalchemy import and_
 from Classes import WorldHasBlocks, Block, WorldHasUsers
 from Commands.generate import world_width, world_height
-from session import session
 
 block_images_folder = "Blocks"
 sky_color = (115, 210, 229)
@@ -23,7 +22,7 @@ def calculate_view_range(center_x, center_y, view_range_width, view_range_height
     return start_x, end_x, start_y, end_y
 
 
-def query_block_data(world_id, start_x, end_x, start_y, end_y, light_distance=0):
+def query_block_data(world_id, session, start_x, end_x, start_y, end_y, light_distance=0):
     extended_start_x = max(0, start_x - light_distance)
     extended_end_x = min(world_width, end_x + light_distance)
     extended_start_y = max(0, start_y - light_distance)
@@ -37,7 +36,7 @@ def query_block_data(world_id, start_x, end_x, start_y, end_y, light_distance=0)
         .all()
 
 
-async def render_world(world_id, user_id, debug=False):
+async def render_world(world_id, user_id, session, debug=False):
     # we use the player_lower block as the root for camera position & collision checks
     user_root_block = session.query(WorldHasBlocks).join(WorldHasUsers, and_(
         WorldHasUsers.world_id == world_id,
@@ -47,8 +46,8 @@ async def render_world(world_id, user_id, debug=False):
 
     start_x, end_x, start_y, end_y = calculate_view_range(user_root_block.x, user_root_block.y, view_range_width,
                                                           view_range_height)
-    block_data = query_block_data(world_id, start_x, end_x, start_y, end_y)
-    block_data_light = query_block_data(world_id, start_x, end_x, start_y, end_y, 5)
+    block_data = query_block_data(world_id, session, start_x, end_x, start_y, end_y)
+    block_data_light = query_block_data(world_id, session, start_x, end_x, start_y, end_y, 5)
 
     # sort blocks by z axis
     block_data.sort(key=lambda x: x[1].z)

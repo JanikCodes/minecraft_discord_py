@@ -3,12 +3,12 @@ import discord
 from discord import app_commands, File
 from discord.ext import commands
 from sqlalchemy import update
-
+from sqlalchemy.orm import sessionmaker
 from Classes import World, WorldHasBlocks
 from Classes import WorldHasUsers
 from Utils.physics import handle_physics
 from Utils.render import render_world
-from session import Session
+from database import engine
 
 
 class PlayCommand(commands.Cog):
@@ -23,7 +23,9 @@ class PlayCommand(commands.Cog):
         embed = discord.Embed(title=f"World Selection",
                               description=f"Please select a world to play on.")
 
+        Session = sessionmaker(bind=engine)
         session = Session()
+
         try:
             # get player worlds
             worlds = session.query(World).join(World.users).filter(WorldHasUsers.user_id == user_id).all()
@@ -84,7 +86,7 @@ class WorldSelect(discord.ui.Select):
 async def handle_rendering(world, interaction, session):
     user_id = interaction.user.id
 
-    world_image = await render_world(world.id, user_id)
+    world_image = await render_world(world.id, user_id, session)
 
     # convert the world_image to bytes
     image_bytes = io.BytesIO()

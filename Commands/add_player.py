@@ -1,9 +1,10 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+from sqlalchemy.orm import sessionmaker
 from Classes import World
 from Classes import WorldHasUsers
-from session import session, Session
+from database import engine
 
 
 class AddPlayerCommand(commands.Cog):
@@ -19,6 +20,7 @@ class AddPlayerCommand(commands.Cog):
                               description=f"Please select one of your worlds..")
 
         # create a new session for this request
+        Session = sessionmaker(bind=engine)
         session = Session()
 
         try:
