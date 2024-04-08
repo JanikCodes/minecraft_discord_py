@@ -2,10 +2,11 @@ import os
 import numpy as np
 from PIL import Image
 from sqlalchemy import and_
-from Classes import WorldHasBlocks, Block, WorldHasUsers
+from Classes import WorldHasBlocks, Block, WorldHasUsers, BlockHasStates
 from Commands.generate import world_width, world_height
 
 block_images_folder = "Blocks"
+asset_images_folder = "Assets"
 sky_color = (115, 210, 229)
 view_range_width = 18  # 25
 view_range_height = 15  # 20
@@ -44,6 +45,12 @@ async def render_world(world_id, user_id, session, debug=False):
         WorldHasBlocks.id == WorldHasUsers.lower_block_id
     )).first()
 
+    selected_block_sprite = session.query(BlockHasStates.sprite).join(WorldHasUsers, and_(
+        WorldHasUsers.world_id == world_id,
+        WorldHasUsers.user_id == user_id,
+        BlockHasStates.block_id == WorldHasUsers.selected_block_id
+    )).first()[0]
+
     start_x, end_x, start_y, end_y = calculate_view_range(user_root_block.x, user_root_block.y, view_range_width,
                                                           view_range_height)
     block_data = query_block_data(world_id, session, start_x, end_x, start_y, end_y)
@@ -53,7 +60,7 @@ async def render_world(world_id, user_id, session, debug=False):
     block_data.sort(key=lambda x: x[1].z)
 
     light_map = propagate_light(block_data_light)
-    world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y)
+    world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y, selected_block_sprite)
 
     if debug:
         print("Stored debug game view in /WorldOutput")
@@ -89,7 +96,7 @@ def get_block_sprite(block_rel, block):
     return 'error'
 
 
-def generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y):
+def generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y, selected_block_sprite):
     new_width = (end_x - start_x) * 16
     new_height = (end_y - start_y) * 16
     world_map = Image.new("RGBA", (new_width, new_height), color=sky_color)
@@ -138,4 +145,18 @@ def generate_world_map_with_lighting(light_map, block_data, start_x, start_y, en
         world_map.paste(block_sprite, ((block_rel.x - start_x) * 16, (block_rel.y - start_y) * 16),
                         block_sprite)  # use block image as mask for transparency
 
+    render_overlay(new_height, selected_block_sprite, world_map)
+
     return world_map
+
+def render_overlay(new_height, selected_block_sprite, world_map):
+    slot_overlay_position = (16, new_height - 32 - 16)
+    block_overlay_position = (24, new_height - 24 - 16)
+
+    render_overlay_item(world_map, asset_images_folder, "inventory_slot", slot_overlay_position)
+    render_overlay_item(world_map, block_images_folder, selected_block_sprite, block_overlay_position)
+
+def render_overlay_item(image, folder, sprite_name, position):
+    block_path = os.path.join(folder, f"{sprite_name}.png")
+    block_sprite = Image.open(block_path).convert("RGBA")
+    image.paste(block_sprite, position, block_sprite)

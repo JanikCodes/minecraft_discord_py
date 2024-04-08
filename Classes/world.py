@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Boolean
+from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 from base import Base
 
@@ -32,7 +32,7 @@ class World(Base):
 
         # add new user to db relation
         user = WorldHasUsers(world_id=self.id, user_id=user_id, upper_block_id=upper_body_block.id,
-                             lower_block_id=lower_body_block.id)
+                             lower_block_id=lower_body_block.id, selected_block_id=13)
         session.add(user)
         session.commit()
 

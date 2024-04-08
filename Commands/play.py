@@ -124,7 +124,12 @@ class WorldGameView(discord.ui.View):
 
             self.add_item(ActionButton(mode=mode, user=world_has_user, dir_x=-1, dir_y=0, world=world, row=2,
                                        session=session))
-            self.add_item(NoneButton(emoji='🚫', row=2))
+
+            if mode == 'BUILD':
+                self.add_item(SwitchBlockButton(world=world, user=world_has_user, session=session, row=2))
+            else:
+                self.add_item(NoneButton(emoji='🚫', row=2))
+
             self.add_item(ActionButton(mode=mode, user=world_has_user, dir_x=1, dir_y=0, world=world, row=2,
                                        session=session))
 
@@ -161,7 +166,6 @@ class ModeButton(discord.ui.Button):
         self.session = session
         # change button color based if the mode is currently selected or not
         self.style = discord.ButtonStyle.success if current_mode == mode else discord.ButtonStyle.primary
-        self.disabled = True if mode == 'BUILD' else False
 
     async def callback(self, interaction: discord.Interaction):
         if str(interaction.user.id) != (self.user.user_id):
@@ -178,7 +182,8 @@ class ModeButton(discord.ui.Button):
         self.session.execute(update_mode)
         self.session.commit()
 
-        await HandleTick(world=self.world, interaction=interaction, session=self.session)
+        await interaction.response.edit_message(view=WorldGameView(user_id=self.user.user_id, world=self.world, session=self.session))
+        #await HandleTick(world=self.world, interaction=interaction, session=self.session)
 
 
 class ActionButton(discord.ui.Button):
@@ -208,9 +213,9 @@ class ActionButton(discord.ui.Button):
             case 'BREAK':
                 world_has_block.destroy_block_at_position(session=self.session, x=position.x + self.dir_x,
                                                           y=position.y + self.dir_y)
-                pass
             case 'BUILD':
-                pass
+                world_has_block.place_block_at_position(session=self.session, x=position.x + self.dir_x,
+                                                          y=position.y + self.dir_y, block_id=self.user.selected_block_id)
 
         await HandleTick(world=self.world, interaction=interaction, session=self.session)
 
@@ -239,6 +244,24 @@ class MoveButton(discord.ui.Button):
 class NoneButton(discord.ui.Button):
     def __init__(self, emoji, row):
         super().__init__(emoji=emoji, style=discord.ButtonStyle.secondary, row=row, disabled=True)
+
+class SwitchBlockButton(discord.ui.Button):
+    def __init__(self, user, world, row, session):
+        super().__init__(emoji="🗂", style=discord.ButtonStyle.primary, row=row)
+        self.user = user
+        self.world = world
+        self.session = session
+
+    async def callback(self, interaction: discord.Interaction):
+        if str(interaction.user.id) != str(self.user.user_id):
+            embed = discord.Embed(title=f"You're not allowed to use this action!",
+                                  description="",
+                                  colour=discord.Color.red())
+            return await interaction.response.send_message(embed=embed, ephemeral=True, delete_after=2)
+
+        self.user.get_next_block_in_rotation(session=self.session)
+
+        await HandleTick(world=self.world, interaction=interaction, session=self.session)
 
 async def HandleTick(world, interaction, session):
     # physics

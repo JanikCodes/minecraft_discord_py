@@ -12,16 +12,18 @@ class WorldHasUsers(Base):
     user_id = Column("user_id", String(80))
     upper_block_id = Column("upper_block_id", Integer, ForeignKey('world_has_blocks.id'))
     lower_block_id = Column("lower_block_id", Integer, ForeignKey('world_has_blocks.id'))
+    selected_block_id = Column("selected_block_id", Integer, ForeignKey('block.id'))
     mode = Column("mode", String(40), default='MOVE')
 
     # define relationships
     world = relationship("World", back_populates="users")
 
-    def __init__(self, world_id, user_id, upper_block_id, lower_block_id, mode='MOVE'):
+    def __init__(self, world_id, user_id, upper_block_id, lower_block_id, selected_block_id, mode='MOVE'):
         self.world_id = world_id
         self.user_id = user_id
         self.upper_block_id = upper_block_id
         self.lower_block_id = lower_block_id
+        self.selected_block_id = selected_block_id
         self.mode = mode
 
     def get_position(self, session):
@@ -42,6 +44,26 @@ class WorldHasUsers(Base):
         lower_block_direction = lower_block_direction[0] if lower_block_direction else None
 
         return lower_block_direction
+
+    def get_next_block_in_rotation(self, session):
+        from Fixtures.blockFixture import wooden_log, stone, dirt
+
+        # blocks declared here are available for building in selection rotation
+        available_blocks = [
+            wooden_log.id,
+            stone.id,
+            dirt.id
+        ]
+
+        current_index = available_blocks.index(self.selected_block_id)
+        next_index = (current_index + 1) % len(available_blocks)
+        next_block_id = available_blocks[next_index]
+
+        update_selected_block = update(WorldHasUsers) \
+            .where(WorldHasUsers.user_id == self.user_id, WorldHasUsers.world_id == self.world_id) \
+            .values({WorldHasUsers.selected_block_id: next_block_id})
+        session.execute(update_selected_block)
+        session.commit()
 
     def update_movement(self, session, dir_x, dir_y):
         def is_block_solid(x, y):
