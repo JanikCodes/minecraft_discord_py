@@ -22,6 +22,8 @@ Create a `.env` file, it should look like [your.env](your.env) but replace the v
 
 Create your database (example: [MySQL](https://www.mysql.com/de/)) with the correct name from [.env](.env)
 
+You don't have to worry about any tables & data entries because [SQLAlchemy](https://www.sqlalchemy.org/) is taking care of that process
+
 Depending on your [DBMS](https://www.ibm.com/docs/en/zos-basic-skills?topic=zos-what-is-database-management-system) you maybe have to modify the [database.py](database.py) due to different connectors.
 
 MySQL
