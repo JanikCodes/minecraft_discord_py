@@ -1,6 +1,6 @@
 # Minimc - 2D Playble Minecraft in Discord
 - - - - -
-![Test Image 3](Assets/banner.png)
+![Banner](Assets/banner.png)
 
 > [!IMPORTANT]
 > The bot is running on my server right now, expect it to go down sometimes. Otherwise host it yourself.
@@ -13,6 +13,9 @@ Minimc is a playable **MMO minecraft** 'clone' in Discord.
 
 The game features various logic like handling **physics**, **tick rate**, **collisions**, **block states** and even really good looking **2D Lighting calculations**.
 <br>This new version includes **image generation** which eliminated certain limitations I ran into previously. (Old version used a conversion from data to emojis for rendering the world)
+
+![Game View](Assets/game.png)
+
 - - - - -
 ## How to contribute
 Create a `.env` file, it should look like [your.env](your.env) but replace the variables with your credentials
