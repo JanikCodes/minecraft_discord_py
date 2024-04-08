@@ -19,7 +19,6 @@ wooden_planks = Block(15, name="Wooden Planks", solid=True, gravity=False, break
 sand = Block(16, name="Sand", solid=True, gravity=True, breakable=True, light_level=0, z=1, debug_color="#FFECB3")
 furnace = Block(17, name="Furnace", solid=True, gravity=False, breakable=True, light_level=2, z=1, debug_color="#535250")
 melon = Block(18, name="Melon", solid=True, gravity=False, breakable=True, light_level=0, z=1, debug_color="#3F9743")
-
 bookshelf = Block(19, name="Bookshelf", solid=True, gravity=False, breakable=True, light_level=0, z=1, debug_color="#3F9743")
 crafting_table = Block(20, name="Crafting Table", solid=True, gravity=False, breakable=True, light_level=0, z=1, debug_color="#3F9743")
 ladder = Block(21, name="Ladder", solid=False, gravity=False, breakable=True, light_level=0, z=1, debug_color="#3F9743")
