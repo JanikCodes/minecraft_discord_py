@@ -72,6 +72,7 @@ class WorldSelect(discord.ui.Select):
             .filter(WorldHasUsers.world_id == world_id).first()
 
         if not exist_in_world:
+
             world = self.session.query(World).filter(World.id == world_id).first()
 
             world.spawn_player(session=self.session, user_id=self.add_player_user.id)
@@ -80,6 +81,8 @@ class WorldSelect(discord.ui.Select):
             edited_embed = message.embeds[0]
             edited_embed.colour = discord.Color.green()
             edited_embed.set_footer(text=f"Added {self.add_player_user.name} to the world!")
+
+            print("A new player has been added to an existing world")
 
             return await interaction.message.edit(embed=edited_embed, view=None)
         else:

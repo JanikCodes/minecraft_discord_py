@@ -51,6 +51,7 @@ class GenerateCommand(commands.Cog):
         embed = discord.Embed(title=f"World Generation",
                               description=f"Currently generating world `{world_name}`...\n"
                                           f"This can take a while...")
+        embed.set_footer(text="You'll be notified by me once I'm done!")
         embed.colour = discord.Color.red()
 
         await interaction.followup.send(embed=embed)

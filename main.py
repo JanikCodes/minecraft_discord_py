@@ -29,7 +29,7 @@ class Client(commands.Bot):
 
         logging.warning("Now logging..")
 
-        ExecuteQueue().start()
+        ExecuteQueue(client=self).start()
 
 client = Client()
 client.run(os.getenv("token"))

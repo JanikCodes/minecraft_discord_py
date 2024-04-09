@@ -1,6 +1,9 @@
+import asyncio
 import random
 import threading
 import time
+
+import discord
 from sqlalchemy.orm import sessionmaker
 from Classes import World
 
@@ -13,9 +16,20 @@ class ExecuteQueue(threading.Thread):
 
     world_queue = []
 
+    def __init__(self, client):
+        super().__init__()
+        self.client = client
+
     @classmethod
     def add_to_queue(self, queue_world):
         self.world_queue.append(queue_world)
+
+    async def notify_user(self, user_id, embed):
+        user = await self.client.fetch_user(user_id)
+        try:
+            await user.send(embed=embed)
+        except discord.Forbidden:
+            pass
 
     def run(self, *args, **kwargs):
         while True:
@@ -44,6 +58,13 @@ class ExecuteQueue(threading.Thread):
                     self.world_queue.remove(queue_item)
 
                     session.commit()
+
+                    embed = discord.Embed(title="World Generation",
+                                          description="Your world has been generated!\nYou can now use `/play` or `/addPlayer`.",
+                                          color=discord.Color.green())
+
+                    asyncio.run_coroutine_threadsafe(self.notify_user(user_id=queue_item.user_id, embed=embed),
+                                                     self.client.loop)
                 except Exception as e:
                     # rollback the transaction if an error occurs
                     session.rollback()
