@@ -32,7 +32,7 @@ class AddPlayerCommand(commands.Cog):
                 embed.set_footer(text="You don't have any world ready right now! You can create one with /generate")
                 await interaction.followup.send(embed=embed)
             else:
-                await interaction.followup.send(embed=embed, view=WorldSelectionView(user_id=user_id, worlds=worlds, add_player_user=user))
+                await interaction.followup.send(embed=embed, view=WorldSelectionView(user_id=user_id, session=session, worlds=worlds, add_player_user=user))
 
             session.commit()
         except Exception as e:
@@ -48,15 +48,16 @@ async def setup(client: commands.Bot) -> None:
     await client.add_cog(AddPlayerCommand(client))
 
 class WorldSelectionView(discord.ui.View):
-    def __init__(self, user_id, worlds, add_player_user):
+    def __init__(self, user_id, session, worlds, add_player_user):
         super().__init__()
 
-        self.add_item(WorldSelect(user_id=user_id, worlds=worlds, add_player_user=add_player_user))
+        self.add_item(WorldSelect(user_id=user_id, session=session, worlds=worlds, add_player_user=add_player_user))
 
 class WorldSelect(discord.ui.Select):
-    def __init__(self, user_id, worlds, add_player_user):
+    def __init__(self, user_id, session, worlds, add_player_user):
         super().__init__(placeholder="Choose a world..")
         self.user_id = user_id
+        self.session = session
         self.worlds = worlds
         self.add_player_user = add_player_user
 
@@ -66,14 +67,14 @@ class WorldSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         world_id = self.values[0]
 
-        exist_in_world = session.query(WorldHasUsers)\
+        exist_in_world = self.session.query(WorldHasUsers)\
             .filter(WorldHasUsers.user_id == self.add_player_user.id)\
             .filter(WorldHasUsers.world_id == world_id).first()
 
         if not exist_in_world:
-            world = session.query(World).filter(World.id == world_id).first()
+            world = self.session.query(World).filter(World.id == world_id).first()
 
-            world.spawn_player(session=session, user_id=self.add_player_user.id)
+            world.spawn_player(session=self.session, user_id=self.add_player_user.id)
 
             message = interaction.message
             edited_embed = message.embeds[0]
