@@ -5,10 +5,13 @@ import numpy as np
 from discord import app_commands
 from discord.ext import commands
 from sqlalchemy import insert
-from Classes import WorldHasBlocks, World
+from sqlalchemy.orm import sessionmaker
+
+from Classes import WorldHasBlocks, World, WorldHasUsers
 from Classes.Structures.tree import Tree
 from Classes.queueWorld import QueueWorld
 from Fixtures.blockFixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air
+from database import engine
 from executeQueue import ExecuteQueue
 
 world_width = 60
@@ -45,16 +48,38 @@ class GenerateCommand(commands.Cog):
         user_id = interaction.user.id
 
         # TODO: Make a limit to worlds a user can generate, ( max 3 worlds? )
+        Session = sessionmaker(bind=engine)
+        session = Session()
 
-        ExecuteQueue.add_to_queue(QueueWorld(world_name=world_name, user_id=user_id))
+        try:
+            exist_in_worlds = session.query(WorldHasUsers)\
+                .filter(WorldHasUsers.user_id == user_id).all()
 
-        embed = discord.Embed(title=f"World Generation",
-                              description=f"Currently generating world `{world_name}`...\n"
-                                          f"This can take a while...")
-        embed.set_footer(text="You'll be notified by me once I'm done!")
-        embed.colour = discord.Color.red()
+            # has user reached maximum amount of worlds he can be in?
+            if len(exist_in_worlds) < 5:
+                ExecuteQueue.add_to_queue(QueueWorld(world_name=world_name, user_id=user_id))
 
-        await interaction.followup.send(embed=embed)
+                embed = discord.Embed(title=f"World Generation",
+                                      description=f"Currently generating world `{world_name}`...\n"
+                                                  f"This can take a while...")
+                embed.set_footer(text="You'll be notified by me once I'm done!")
+                embed.colour = discord.Color.red()
+
+                await interaction.followup.send(embed=embed)
+            else:
+                embed = discord.Embed(title=f"World Generation",
+                                      description=f"You've already reached the maximum amount of worlds you can be in!")
+                embed.set_footer(text="You can not delete worlds yet, this will come later down the line")
+                embed.colour = discord.Color.red()
+
+                await interaction.followup.send(embed=embed)
+        except Exception as e:
+            # rollback the transaction if an error occurs
+            session.rollback()
+            raise e
+        finally:
+            # close the session
+            session.close()
 
 
 async def setup(client: commands.Bot) -> None:

@@ -32,7 +32,20 @@ class AddPlayerCommand(commands.Cog):
                 embed.set_footer(text="You don't have any world ready right now! You can create one with /generate")
                 await interaction.followup.send(embed=embed)
             else:
-                await interaction.followup.send(embed=embed, view=WorldSelectionView(user_id=user_id, session=session, worlds=worlds, add_player_user=user))
+                # check if mentioned user has reached maximum amount of worlds he can be in
+                exist_in_worlds = session.query(WorldHasUsers) \
+                    .filter(WorldHasUsers.user_id == user.id).all()
+
+                if len(exist_in_worlds) < 5:
+                    await interaction.followup.send(embed=embed,
+                                                    view=WorldSelectionView(user_id=user_id, session=session,
+                                                                            worlds=worlds, add_player_user=user))
+                else:
+                    embed = discord.Embed(title=f"Adding {user.name} to world..",
+                                          description=f"{user.name} has already reached the maximum amount of worlds he can be in!")
+                    embed.colour = discord.Color.red()
+
+                    await interaction.followup.send(embed=embed)
 
             session.commit()
         except Exception as e:
