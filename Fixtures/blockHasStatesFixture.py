@@ -1,7 +1,7 @@
 from Classes import BlockHasStates
 from Fixtures.blockFixture import air, grass, stone, dirt, coal, iron, gold, diamond, stone_background, player_upper, \
     player_lower, wooden_log, leave, wooden_planks, sand, furnace, melon, bookshelf, crafting_table, ladder, stone_brick, tnt, torch, \
-    brick, cobblestone
+    brick, cobblestone, world_spawn
 
 air_default = BlockHasStates(id=1, block_id=air.id, sprite="air", state_active=0, state_direction=1)
 grass_default = BlockHasStates(id=2, block_id=grass.id, sprite="grass_side", state_active=0, state_direction=1)
@@ -30,3 +30,4 @@ tnt_default = BlockHasStates(id=24, block_id=tnt.id, sprite="tnt_side", state_ac
 torch_default = BlockHasStates(id=25, block_id=torch.id, sprite="torch_on", state_active=0, state_direction=1)
 brick_default = BlockHasStates(id=26, block_id=brick.id, sprite="brick", state_active=0, state_direction=1)
 cobblestone_default = BlockHasStates(id=27, block_id=cobblestone.id, sprite="cobblestone", state_active=0, state_direction=1)
+world_spawn_default = BlockHasStates(id=28, block_id=world_spawn.id, sprite="daylight_detector_inverted_top", state_active=0, state_direction=1)

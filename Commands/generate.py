@@ -10,7 +10,8 @@ from sqlalchemy.orm import sessionmaker
 from Classes import WorldHasBlocks, World, WorldHasUsers
 from Classes.Structures.tree import Tree
 from Classes.queueWorld import QueueWorld
-from Fixtures.blockFixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air
+from Fixtures.blockFixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air, melon, \
+    world_spawn
 from database import engine
 from executeQueue import ExecuteQueue
 
@@ -95,6 +96,7 @@ def generate_no_async(session, world_id):
     gen_caves(blocks)
     gen_surface(blocks)
     gen_trees(blocks)
+    gen_spawn_block(blocks)
     persist_blocks(session, blocks, world_id)
 
 def gen_terrain_base(blocks):
@@ -194,6 +196,17 @@ def gen_trees(blocks):
     for x, y, z in grass_positions:
         if random.random() < tree_chance:
             Tree().generate(x, y - 1, blocks)
+
+def gen_spawn_block(blocks):
+    for (x, y, z), block_id in blocks.items():
+        # start searching for spawn area at the center
+        if x >= world_width / 2:
+            if block_id == grass.id:
+                # check if 2 blocks above are air
+                if (x, y - 1, z) in blocks and blocks[(x, y - 1, z)] == air.id:
+                    if (x, y - 2, z) in blocks and blocks[(x, y - 2, z)] == air.id:
+                        blocks[(x, y, z)] = world_spawn.id
+                        break
 
 def paint_in_sphere(blocks, x, y, z, min_radius, max_radius, block_id):
     cave_radius = random.uniform(min_radius, max_radius)

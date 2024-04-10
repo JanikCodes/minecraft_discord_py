@@ -27,3 +27,4 @@ tnt = Block(23, name="TNT", solid=True, gravity=True, breakable=True, light_leve
 torch = Block(24, name="Torch", solid=False, gravity=False, breakable=True, light_level=10, z=1, debug_color="#3F9743")
 brick = Block(25, name="Brick", solid=True, gravity=False, breakable=True, light_level=0, z=1, debug_color="#3F9743")
 cobblestone = Block(26, name="Cobblestone", solid=True, gravity=False, breakable=True, light_level=0, z=1, debug_color="#3F9743")
+world_spawn = Block(27, name="World Spawn", solid=True, gravity=False, breakable=False, light_level=0, z=1, debug_color="#3F9743")
