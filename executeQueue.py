@@ -24,10 +24,6 @@ class ExecuteQueue(threading.Thread):
         self.world_queue.append(queue_world)
 
     async def notify_user(self, user_id, embed, session):
-        # set world count as bot status
-        world_count = session.query(World).count()
-        await self.client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{world_count} worlds"))
-
         # notify user that the world is finished
         user = await self.client.fetch_user(user_id)
         try:
