@@ -54,7 +54,7 @@ async def render_world(world_id, user_id, session, debug=False):
     start_x, end_x, start_y, end_y = calculate_view_range(user_root_block.x, user_root_block.y, view_range_width,
                                                           view_range_height)
     block_data = query_block_data(world_id, session, start_x, end_x, start_y, end_y)
-    block_data_light = query_block_data(world_id, session, start_x, end_x, start_y, end_y, 5)
+    block_data_light = query_block_data(world_id, session, start_x, end_x, start_y, end_y, 10)
 
     # sort blocks by z axis
     block_data.sort(key=lambda x: x[1].z)
