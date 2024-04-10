@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from sqlalchemy.orm import sessionmaker
-from Classes import World
+from Classes import World, WorldHasBlocks
 from Classes import WorldHasUsers
 from database import engine
 
@@ -82,10 +82,20 @@ class WorldSelect(discord.ui.Select):
             edited_embed.set_footer(text=f"You haven't joined this world anymore!")
             return await interaction.message.edit(embed=edited_embed, view=None)
         else:
+            # remove world-user relation
             self.session.delete(exist_in_world)
+
+            # remove player associated blocks
+            upper_block = self.session.query(WorldHasBlocks).get(exist_in_world.upper_block_id)
+            if upper_block:
+                self.session.delete(upper_block)
+
+            lower_block = self.session.query(WorldHasBlocks).get(exist_in_world.lower_block_id)
+            if lower_block:
+                self.session.delete(lower_block)
+
             self.session.commit()
 
-            # remove world access from user
             message = interaction.message
             edited_embed = message.embeds[0]
             edited_embed.colour = discord.Color.green()
