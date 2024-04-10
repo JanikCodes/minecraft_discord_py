@@ -87,7 +87,7 @@ async def setup(client: commands.Bot) -> None:
     await client.add_cog(GenerateCommand(client))
 
 
-def generate_no_async(session, world_id):
+def generate_world(session, world_id):
     blocks = {}
     gen_terrain_base(blocks)
     gen_stone_biome(blocks)
