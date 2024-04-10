@@ -6,6 +6,7 @@ import time
 import discord
 from sqlalchemy.orm import sessionmaker
 from Classes import World
+from database import engine
 
 world_generation_interval = 3
 
@@ -37,7 +38,8 @@ class ExecuteQueue(threading.Thread):
 
             if len(self.world_queue) > 0:
                 # create a new session for this request
-                session = self.Session()
+                Session = sessionmaker(bind=engine)
+                session = Session()
 
                 try:
                     # choose a world to generate

@@ -21,12 +21,14 @@ class World(Base):
     def spawn_player(self, session, user_id):
         from Classes import WorldHasBlocks, WorldHasUsers
 
+        spawn_pos = self.get_valid_spawn_position(session)
+
         # add player representive blocks
-        upper_body_block = WorldHasBlocks(world_id=self.id, block_id=11, x=self.get_valid_spawn_position(session).x, y=self.get_valid_spawn_position(session).y)
+        upper_body_block = WorldHasBlocks(world_id=self.id, block_id=11, x=spawn_pos.x, y=spawn_pos.y)
         session.add(upper_body_block)
         session.commit()
 
-        lower_body_block = WorldHasBlocks(world_id=self.id, block_id=12, x=self.get_valid_spawn_position(session).x, y=self.get_valid_spawn_position(session).y + 1)
+        lower_body_block = WorldHasBlocks(world_id=self.id, block_id=12, x=spawn_pos.x, y=spawn_pos.y + 1)
         session.add(lower_body_block)
         session.commit()
 

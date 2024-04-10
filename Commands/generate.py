@@ -60,9 +60,9 @@ class GenerateCommand(commands.Cog):
                 ExecuteQueue.add_to_queue(QueueWorld(world_name=world_name, user_id=user_id))
 
                 embed = discord.Embed(title=f"World Generation",
-                                      description=f"Currently generating world `{world_name}`...\n"
-                                                  f"This can take a while...")
-                embed.set_footer(text="You'll be notified by me once I'm done!")
+                                      description=f"Added world `{world_name}` to the queue...\n"
+                                                  f"This can take a while... ( 15-45 seconds )")
+                embed.set_footer(text="You'll be notified by me once I'm done if you have DM's enabled!")
                 embed.colour = discord.Color.red()
 
                 await interaction.followup.send(embed=embed)
@@ -85,17 +85,6 @@ class GenerateCommand(commands.Cog):
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(GenerateCommand(client))
 
-
-async def generate(session, world_id):
-    blocks = {}
-    gen_terrain_base(blocks)
-    gen_stone_biome(blocks)
-    gen_dirt_biome(blocks)
-    gen_ores(blocks)
-    gen_caves(blocks)
-    gen_surface(blocks)
-    gen_trees(blocks)
-    persist_blocks(session, blocks, world_id)
 
 def generate_no_async(session, world_id):
     blocks = {}
