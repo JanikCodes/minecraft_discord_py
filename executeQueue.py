@@ -57,8 +57,9 @@ class ExecuteQueue(threading.Thread):
                     world.spawn_player(session=session, user_id=queue_item.user_id)
 
                     self.world_queue.remove(queue_item)
-
                     session.commit()
+                    # increment world count for bot status
+                    self.client.world_count += 1
 
                     embed = discord.Embed(title="World Generation",
                                           description="Your world has been generated!\nYou can now use `/play` or `/addPlayer`.",

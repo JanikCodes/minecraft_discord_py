@@ -12,9 +12,11 @@ from executeQueue import ExecuteQueue
 import database
 import executeFixtures
 
+
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='.', intents=discord.Intents().default())
+        self.world_count = 0
 
     async def setup_hook(self):
         for fileName in os.listdir('./Commands'):
@@ -32,17 +34,18 @@ class Client(commands.Bot):
 
         logging.warning("Now logging..")
 
+        # get the initial world count on startup
+        Session = sessionmaker(bind=database.engine)
+        session = Session()
+        self.world_count = session.query(World).count()
+
         self.update_bot_status.start()
 
         ExecuteQueue(client=self).start()
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(seconds=60)
     async def update_bot_status(self):
-        Session = sessionmaker(bind=database.engine)
-        session = Session()
-
-        world_count = session.query(World).count()
-        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{world_count} worlds"))
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{self.world_count} worlds"))
 
 client = Client()
 client.run(os.getenv("token"))
