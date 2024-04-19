@@ -20,6 +20,9 @@ The game features various logic like handling **physics**, **tick rate**, **coll
 ## How to contribute
 Create a fork of this repository
 
+Create a [Discord Bot](https://discord.com/developers/docs/intro). You can do this [here](https://discord.com/developers/applications).<br>
+You'll need it to test your code changes by inviting your bot to your own discord server ( or private chat )
+
 Create a `.env` file, it should look like [your.env](your.env) but replace the variables with your credentials
 
 Create your database (example: [MySQL](https://www.mysql.com/de/)) with the correct name from [.env](.env)
