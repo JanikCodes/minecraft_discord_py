@@ -48,6 +48,11 @@ pip install -r requirements.txt
 ```
 🎉 You should now be able to generate a world with the slash command `/generate`
 - - - - -
+### Documentation
+You can easily test the **world generation** by executing the file [render_test.py](render_test.py). It'll automatically generate a brand new world and store a **full rendering** of that world in a specific output folder.
+
+*more coming soon*
+- - - - -
 ### Feature list
 - 🏃‍♂️ Player movement & rendering
 - 👊 Placing / Destroying `blocks`
