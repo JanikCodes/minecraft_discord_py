@@ -2,8 +2,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from sqlalchemy.orm import sessionmaker
-from Classes import World, WorldHasBlocks
-from Classes import WorldHasUsers
+from classes import World, WorldHasBlocks
+from classes import WorldHasUsers
 from database import engine
 
 

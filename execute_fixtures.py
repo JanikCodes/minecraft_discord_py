@@ -1,7 +1,7 @@
 from sqlalchemy.orm import sessionmaker
 
-from Fixtures.block_fixture import *
-from Fixtures.block_has_states_fixture import *
+from fixtures.block_fixture import *
+from fixtures.block_has_states_fixture import *
 from database import engine
 
 Session = sessionmaker(bind=engine)

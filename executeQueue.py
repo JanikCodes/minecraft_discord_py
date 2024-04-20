@@ -5,7 +5,7 @@ import time
 
 import discord
 from sqlalchemy.orm import sessionmaker
-from Classes import World
+from classes import World
 from database import engine
 
 world_generation_interval = 3
@@ -51,7 +51,7 @@ class ExecuteQueue(threading.Thread):
                     session.commit()
 
                     # start generate process
-                    from Commands.generate import generate_world
+                    from commands.generate import generate_world
                     generate_world(session=session, world_id=world.id)
 
                     world.spawn_player(session=session, user_id=queue_item.user_id)

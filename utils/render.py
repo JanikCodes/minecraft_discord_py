@@ -2,11 +2,11 @@ import os
 import numpy as np
 from PIL import Image
 from sqlalchemy import and_
-from Classes import WorldHasBlocks, Block, WorldHasUsers, BlockHasStates
-from Commands.generate import world_width, world_height
+from classes import WorldHasBlocks, Block, WorldHasUsers, BlockHasStates
+from commands.generate import world_width, world_height
 
-block_images_folder = "Blocks"
-asset_images_folder = "Assets"
+block_images_folder = "blocks"
+asset_images_folder = "assets"
 sky_color = (115, 210, 229)
 view_range_width = 18  # 25
 view_range_height = 15  # 20
@@ -63,8 +63,8 @@ async def render_world(world_id, user_id, session, debug=False):
     world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y, selected_block_sprite)
 
     if debug:
-        print("Stored debug game view in /WorldOutput")
-        world_map_with_lighting.save("WorldOutput/world_map.png")
+        print("Stored debug game view in /test_output")
+        world_map_with_lighting.save("test_output/world_map.png")
 
     return world_map_with_lighting
 

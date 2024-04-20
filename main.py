@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands, tasks
 from sqlalchemy.orm import sessionmaker
 
-from Classes import World
+from classes import World
 from executeQueue import ExecuteQueue
 
 # import required files
@@ -19,9 +19,9 @@ class Client(commands.Bot):
         self.world_count = 0
 
     async def setup_hook(self):
-        for fileName in os.listdir('./Commands'):
+        for fileName in os.listdir('commands'):
             if fileName.endswith('.py'):
-                extension = f'Commands.{fileName[:-3]}'
+                extension = f'commands.{fileName[:-3]}'
                 await self.load_extension(extension)
 
         await self.tree.sync()

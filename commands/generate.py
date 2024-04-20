@@ -7,10 +7,10 @@ from discord.ext import commands
 from sqlalchemy import insert
 from sqlalchemy.orm import sessionmaker
 
-from Classes import WorldHasBlocks, World, WorldHasUsers
-from Classes.Structures.tree import Tree
-from Classes.queue_world import QueueWorld
-from Fixtures.block_fixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air, melon, \
+from classes import WorldHasBlocks, World, WorldHasUsers
+from classes.structures.tree import Tree
+from classes.queue_world import QueueWorld
+from fixtures.block_fixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air, melon, \
     world_spawn
 from database import engine
 from executeQueue import ExecuteQueue

@@ -4,10 +4,10 @@ from discord import app_commands, File
 from discord.ext import commands
 from sqlalchemy import update
 from sqlalchemy.orm import sessionmaker
-from Classes import World, WorldHasBlocks
-from Classes import WorldHasUsers
-from Utils.physics import handle_physics
-from Utils.render import render_world
+from classes import World, WorldHasBlocks
+from classes import WorldHasUsers
+from utils.physics import handle_physics
+from utils.render import render_world
 from database import engine
 
 

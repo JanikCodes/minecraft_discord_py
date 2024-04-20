@@ -1,4 +1,4 @@
-from Classes import Block
+from classes import Block
 
 # add new blocks below. Each block requires atleast one blockHasStates entity to render.
 

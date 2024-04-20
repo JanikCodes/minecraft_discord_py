@@ -1,5 +1,5 @@
-from Classes import BlockHasStates
-from Fixtures.block_fixture import air, grass, stone, dirt, coal, iron, gold, diamond, stone_background, player_upper, \
+from classes import BlockHasStates
+from fixtures.block_fixture import air, grass, stone, dirt, coal, iron, gold, diamond, stone_background, player_upper, \
     player_lower, wooden_log, leave, wooden_planks, sand, furnace, melon, bookshelf, crafting_table, ladder, stone_brick, tnt, torch, \
     brick, cobblestone, world_spawn
 

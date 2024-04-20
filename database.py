@@ -5,8 +5,8 @@ import base
 
 load_dotenv()
 
-# Import all Classes
-from Classes import Block, World, WorldHasBlocks, WorldHasUsers
+# Import all classes
+from classes import Block, World, WorldHasBlocks, WorldHasUsers
 
 # Create database structure
 host = os.getenv("host")

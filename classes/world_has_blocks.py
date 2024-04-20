@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, ForeignKey, Boolean, update
 from sqlalchemy.orm import relationship
 
-from Classes import Block
+from classes import Block
 from base import Base
 
 

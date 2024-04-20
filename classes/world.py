@@ -19,7 +19,7 @@ class World(Base):
         self.owner = owner
 
     def spawn_player(self, session, user_id):
-        from Classes import WorldHasBlocks, WorldHasUsers
+        from classes import WorldHasBlocks, WorldHasUsers
 
         spawn_pos = self.get_valid_spawn_position(session)
 
@@ -41,8 +41,8 @@ class World(Base):
 
     def get_valid_spawn_position(self, session):
         # query all non-solid blocks in the world
-        from Classes import WorldHasBlocks, Block
-        from Fixtures.block_fixture import world_spawn
+        from classes import WorldHasBlocks, Block
+        from fixtures.block_fixture import world_spawn
 
         world_spawn_block = session.query(WorldHasBlocks.x, WorldHasBlocks.y) \
             .join(Block) \

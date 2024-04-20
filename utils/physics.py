@@ -1,5 +1,5 @@
 from sqlalchemy import and_
-from Classes import WorldHasBlocks, Block
+from classes import WorldHasBlocks, Block
 
 
 async def handle_physics(world, session):
