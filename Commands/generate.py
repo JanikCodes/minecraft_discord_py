@@ -9,8 +9,8 @@ from sqlalchemy.orm import sessionmaker
 
 from Classes import WorldHasBlocks, World, WorldHasUsers
 from Classes.Structures.tree import Tree
-from Classes.queueWorld import QueueWorld
-from Fixtures.blockFixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air, melon, \
+from Classes.queue_world import QueueWorld
+from Fixtures.block_fixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air, melon, \
     world_spawn
 from database import engine
 from executeQueue import ExecuteQueue

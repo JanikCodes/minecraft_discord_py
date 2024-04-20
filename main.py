@@ -10,7 +10,7 @@ from executeQueue import ExecuteQueue
 
 # import required files
 import database
-import executeFixtures
+import execute_fixtures
 
 
 class Client(commands.Bot):

@@ -46,7 +46,7 @@ class WorldHasUsers(Base):
         return lower_block_direction
 
     def get_next_block_in_rotation(self, session):
-        from Fixtures.blockFixture import wooden_log, stone, dirt, grass, leave, wooden_planks, furnace, sand, melon, \
+        from Fixtures.block_fixture import wooden_log, stone, dirt, grass, leave, wooden_planks, furnace, sand, melon, \
             bookshelf, crafting_table, ladder, stone_brick, tnt, torch, brick, cobblestone
 
         # blocks declared here are available for building in selection rotation

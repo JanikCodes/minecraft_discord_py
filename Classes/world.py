@@ -42,7 +42,7 @@ class World(Base):
     def get_valid_spawn_position(self, session):
         # query all non-solid blocks in the world
         from Classes import WorldHasBlocks, Block
-        from Fixtures.blockFixture import world_spawn
+        from Fixtures.block_fixture import world_spawn
 
         world_spawn_block = session.query(WorldHasBlocks.x, WorldHasBlocks.y) \
             .join(Block) \

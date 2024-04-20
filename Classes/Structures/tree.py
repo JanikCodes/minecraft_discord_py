@@ -1,4 +1,4 @@
-from Fixtures.blockFixture import wooden_log, leave
+from Fixtures.block_fixture import wooden_log, leave
 
 
 class Tree():
