@@ -37,7 +37,7 @@ def query_block_data(world_id, session, start_x, end_x, start_y, end_y, light_di
         .all()
 
 
-async def render_world(world_id, user_id, session, debug=False):
+async def render_world(world_id, user_id, session):
     # we use the player_lower block as the root for camera position & collision checks
     user_root_block = session.query(WorldHasBlocks).join(WorldHasUsers, and_(
         WorldHasUsers.world_id == world_id,
@@ -62,9 +62,23 @@ async def render_world(world_id, user_id, session, debug=False):
     light_map = propagate_light(block_data_light)
     world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y, selected_block_sprite)
 
-    if debug:
-        print("Stored debug game view in /test_output")
-        world_map_with_lighting.save("test_output/world_map.png")
+    return world_map_with_lighting
+
+def render_world_full(world_id, session):
+
+    start_x, end_x, start_y, end_y = calculate_view_range(world_width / 2, world_height / 2, world_width * 2,
+                                                          world_height * 2)
+    block_data = query_block_data(world_id, session, start_x, end_x, start_y, end_y)
+    block_data_light = query_block_data(world_id, session, start_x, end_x, start_y, end_y, 10)
+
+    # sort blocks by z axis
+    block_data.sort(key=lambda x: x[1].z)
+
+    light_map = propagate_light(block_data_light)
+    world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y)
+
+    print("Stored debug game view in /test_output")
+    world_map_with_lighting.save("test_output/world_map.png")
 
     return world_map_with_lighting
 
@@ -96,7 +110,7 @@ def get_block_sprite(block_rel, block):
     return 'error'
 
 
-def generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y, selected_block_sprite):
+def generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y, selected_block_sprite=None):
     new_width = (end_x - start_x) * 16
     new_height = (end_y - start_y) * 16
     world_map = Image.new("RGBA", (new_width, new_height), color=sky_color)
@@ -145,7 +159,9 @@ def generate_world_map_with_lighting(light_map, block_data, start_x, start_y, en
         world_map.paste(block_sprite, ((block_rel.x - start_x) * 16, (block_rel.y - start_y) * 16),
                         block_sprite)  # use block image as mask for transparency
 
-    render_overlay(new_height, selected_block_sprite, world_map)
+    # only render block overlay if wanted ( not wanted by full world render for testing )
+    if selected_block_sprite:
+        render_overlay(new_height, selected_block_sprite, world_map)
 
     return world_map
 
