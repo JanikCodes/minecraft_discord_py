@@ -49,7 +49,14 @@ pip install -r requirements.txt
 🎉 You should now be able to generate a world with the slash command `/generate`
 - - - - -
 ### Documentation
-You can easily test the **world generation** by executing the file [render_test.py](render_test.py). It'll automatically generate a brand new world and store a **full rendering** of that world in a specific output folder.
+
+<b>Is there a good way to test world generation quickly?</b> 
+
+You can easily test the **world generation** by executing the file [test_render_world_generation.py](test_render_world_generation.py). It'll automatically generate a brand new world and store a **full rendering** of that world in a specific output folder.
+
+<b>Can I get a render of all available worlds? (useful in production)</b>
+
+You can easily get a snapshots of all available worlds by executing the file [test_render_all_worlds.py](test_render_all_worlds.py).
 
 *more coming soon*
 - - - - -

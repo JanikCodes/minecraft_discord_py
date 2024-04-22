@@ -77,8 +77,8 @@ def render_world_full(world_id, session):
     light_map = propagate_light(block_data_light)
     world_map_with_lighting = generate_world_map_with_lighting(light_map, block_data, start_x, start_y, end_x, end_y)
 
-    print("Stored debug game view in /test_output")
-    world_map_with_lighting.save("test_output/world_map.png")
+    # store game view in /test_output")
+    world_map_with_lighting.save(f"test_output/{world_id}.png")
 
     return world_map_with_lighting
 

@@ -1,3 +1,7 @@
+# Execute this file to test your current world generation.
+# It'll generate a new world and make a full snapshot of the world and store it inside /test_output.
+# This is very useful for testing changes in the world generation.
+
 from sqlalchemy.orm import sessionmaker
 
 from classes import World
