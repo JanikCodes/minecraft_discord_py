@@ -28,3 +28,4 @@ torch = Block(24, name="Torch", solid=False, gravity=False, breakable=True, ligh
 brick = Block(25, name="Brick", solid=True, gravity=False, breakable=True, light_level=0, z=1, debug_color="#3F9743")
 cobblestone = Block(26, name="Cobblestone", solid=True, gravity=False, breakable=True, light_level=0, z=1, debug_color="#3F9743")
 world_spawn = Block(27, name="World Spawn", solid=True, gravity=False, breakable=False, light_level=0, z=1, debug_color="#3F9743")
+chicken = Block(28, name="Chicken", solid=True, gravity=True, breakable=False, light_level=0, z=1, debug_color="#F0F0F0")

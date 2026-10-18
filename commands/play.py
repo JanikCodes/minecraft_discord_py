@@ -6,6 +6,7 @@ from sqlalchemy import update
 from sqlalchemy.orm import sessionmaker
 from classes import World, WorldHasBlocks
 from classes import WorldHasUsers
+from classes.entities.chicken import Chicken
 from utils.physics import handle_physics
 from utils.render import render_world
 from database import engine
@@ -264,6 +265,8 @@ class SwitchBlockButton(discord.ui.Button):
         await HandleTick(world=self.world, interaction=interaction, session=self.session)
 
 async def HandleTick(world, interaction, session):
+    # entities
+    Chicken().update(world=world, session=session)
     # physics
     await handle_physics(world=world, session=session)
     # render

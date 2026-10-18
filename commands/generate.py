@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from classes import WorldHasBlocks, World, WorldHasUsers
 from classes.structures.tree import Tree
+from classes.entities.chicken import Chicken
 from classes.queue_world import QueueWorld
 from fixtures.block_fixture import dirt, stone, coal, iron, gold, diamond, stone_background, grass, air, melon, \
     world_spawn
@@ -22,6 +23,8 @@ surface_biome_max_y = 10
 surface_sin_wave_amount = 4
 
 tree_chance = 0.15
+
+chicken_amount = 4
 
 cave_biome_max_y = 15
 cave_density = 0.01
@@ -97,6 +100,7 @@ def generate_world(session, world_id):
     gen_surface(blocks)
     gen_trees(blocks)
     gen_spawn_block(blocks)
+    gen_chickens(blocks)
     persist_blocks(session, blocks, world_id)
 
 def gen_terrain_base(blocks):
@@ -207,6 +211,12 @@ def gen_spawn_block(blocks):
                     if (x, y - 2, z) in blocks and blocks[(x, y - 2, z)] == air.id:
                         blocks[(x, y, z)] = world_spawn.id
                         break
+
+def gen_chickens(blocks):
+    # spawn chickens on random grass blocks that have free space above
+    spawn_positions = Chicken().find_spawn_positions(blocks)
+    for x, y in random.sample(spawn_positions, min(chicken_amount, len(spawn_positions))):
+        Chicken().generate(x, y, blocks)
 
 def paint_in_sphere(blocks, x, y, z, min_radius, max_radius, block_id):
     cave_radius = random.uniform(min_radius, max_radius)
